@@ -1,13 +1,30 @@
 <!DOCTYPE html>
-<!-- saved from url=(0045)file:///C:/Users/bryan/Downloads/index_3.html -->
-<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mon Portefeuille</title>
-<script src="./index_files/chart.umd.min.js.téléchargement"></script>
+<!-- FIX B1 : Chart.js via CDN (remplace le fichier local cassé) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
-:root{--bg:#f5f7fa;--card:#fff;--el:#eef1f6;--text:#111;--muted:#666;--faint:#aaa;--bdr:rgba(0,0,0,.08);--bdrs:rgba(0,0,0,.15);--acc:#1D3557;--accl:#e8eef7;--grn:#1B7A45;--grnb:#e8f5e9;--red:#B71C1C;--redb:#ffebee;--ora:#BF360C;--orab:#fff3e0;--blu:#0C447C;--blub:#e3f2fd;--tel:#0F6E56;--telb:#e1f5ee;}
-@media(prefers-color-scheme:dark){:root{--bg:#1a1a1a;--card:#252525;--el:#2e2e2e;--text:#f0f0f0;--muted:#aaa;--faint:#666;--bdr:rgba(255,255,255,.08);--bdrs:rgba(255,255,255,.18);--acc:#4d7bb5;--accl:#1a2a45;--grn:#4ecb71;--grnb:#1b3a24;--red:#ff6b6b;--redb:#3a1818;--blub:#0d2a45;--telb:#0d3028;}}
+:root{
+  --bg:#f5f7fa;--card:#fff;--el:#eef1f6;--text:#111;--muted:#666;--faint:#aaa;
+  --bdr:rgba(0,0,0,.08);--bdrs:rgba(0,0,0,.15);
+  --acc:#1D3557;--accl:#e8eef7;
+  --grn:#1B7A45;--grnb:#e8f5e9;
+  --red:#B71C1C;--redb:#ffebee;
+  --ora:#BF360C;--orab:#fff3e0;
+  --blu:#0C447C;--blub:#e3f2fd;
+  --tel:#0F6E56;--telb:#e1f5ee;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1a1a1a;--card:#252525;--el:#2e2e2e;--text:#f0f0f0;--muted:#aaa;--faint:#666;
+  --bdr:rgba(255,255,255,.08);--bdrs:rgba(255,255,255,.18);
+  --acc:#4d7bb5;--accl:#1a2a45;
+  --grn:#4ecb71;--grnb:#1b3a24;
+  --red:#ff6b6b;--redb:#3a1818;
+  --blub:#0d2a45;--telb:#0d3028;
+}}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:20px;font-size:14px;}
 .wrap{max-width:1160px;margin:0 auto;}
@@ -33,7 +50,8 @@ h1{font-size:20px;font-weight:600;}
 .status-err{background:#ffebee;border:.5px solid #ef9a9a;color:#b71c1c;}
 .status-loading{background:#e3f2fd;border:.5px solid #90caf9;color:#0d47a1;}
 .card{background:var(--card);border:.5px solid var(--bdr);border-radius:12px;overflow:hidden;margin-bottom:16px;}
-.th,.tr{display:grid;grid-template-columns:2.2fr .85fr 1fr .85fr .7fr;gap:6px;padding:9px 13px;align-items:center;}
+/* Colonne supplémentaire pour le bouton supprimer */
+.th,.tr{display:grid;grid-template-columns:2.2fr .85fr 1fr .85fr .7fr .4fr;gap:6px;padding:9px 13px;align-items:center;}
 .th{font-size:10px;color:var(--faint);font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-bottom:.5px solid var(--bdr);}
 .tr{font-size:12px;border-bottom:.5px solid var(--bdr);}
 .tr:last-child{border-bottom:none;}
@@ -44,6 +62,7 @@ h1{font-size:20px;font-weight:600;}
 .ta{background:var(--blub);color:var(--blu);}
 .te{background:var(--telb);color:var(--tel);}
 .pt{font-size:9px;padding:2px 5px;border-radius:3px;background:var(--el);color:var(--muted);margin-left:3px;}
+.pt-local{font-size:9px;padding:2px 5px;border-radius:3px;background:var(--accl);color:var(--acc);border:.5px solid var(--acc);margin-left:3px;}
 .sdesc{font-size:10px;color:var(--faint);margin-top:1px;}
 .bge{font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px;display:inline-block;}
 .bu2{background:var(--grnb);color:var(--grn);}
@@ -59,6 +78,9 @@ h1{font-size:20px;font-weight:600;}
 .ld{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
 .abtn{font-size:12px;color:var(--acc);cursor:pointer;background:none;border:.5px solid var(--acc);border-radius:6px;padding:6px 14px;margin-top:10px;font-weight:500;}
 .abtn:hover{background:var(--accl);}
+/* Bouton supprimer */
+.del-btn{background:none;border:none;color:var(--faint);cursor:pointer;font-size:13px;padding:2px 5px;border-radius:4px;line-height:1;}
+.del-btn:hover{color:var(--red);background:var(--redb);}
 /* Watchlist */
 .wcard{background:var(--card);border:.5px solid var(--bdr);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
 .windic{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
@@ -72,13 +94,8 @@ h1{font-size:20px;font-weight:600;}
 .wnote{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5;border-top:.5px solid var(--bdr);padding-top:8px;}
 .rfbtn{background:var(--acc);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-weight:500;}
 .rfbtn:hover{opacity:.85;}
-@media(max-width:650px){.cg{grid-template-columns:1fr;}.th,.tr{grid-template-columns:2fr 1fr 1fr;}.th>*:nth-child(2),.tr>*:nth-child(2),.th>*:nth-child(4),.tr>*:nth-child(4){display:none;}}
-/* Auto-refresh bar */
-.rfbar{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);margin-bottom:14px;background:var(--card);border:.5px solid var(--bdr);border-radius:8px;padding:8px 13px;}
-.rfbar-label{white-space:nowrap;}
-.rfbar-progress{flex:1;height:3px;background:var(--bdr);border-radius:2px;overflow:hidden;}
-.rfbar-fill{height:100%;background:var(--acc);border-radius:2px;transition:width 1s linear;}
-.rfbar-toggle{font-size:11px;cursor:pointer;color:var(--acc);background:none;border:none;padding:0;font-family:inherit;white-space:nowrap;}
+/* Dernière mise à jour */
+.lastupdate{font-size:11px;color:var(--muted);margin-bottom:14px;background:var(--card);border:.5px solid var(--bdr);border-radius:8px;padding:8px 13px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
 /* Modal */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;padding:16px;}
 .overlay.open{display:flex;}
@@ -95,9 +112,22 @@ h1{font-size:20px;font-weight:600;}
 .btn-p{background:var(--acc);color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:13px;cursor:pointer;font-weight:500;}
 .btn-p:hover{opacity:.85;}
 .btn-c{background:var(--el);color:var(--text);border:none;border-radius:7px;padding:8px 18px;font-size:13px;cursor:pointer;}
+/* FIX B5 : Formulaire inline historique (remplace prompt()) */
+.hform{background:var(--el);border:.5px solid var(--bdr);border-radius:10px;padding:14px;margin-top:10px;display:none;}
+.hform.open{display:block;}
+.hform-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;}
 /* Toast */
 .toast{position:fixed;bottom:22px;right:22px;background:#1D3557;color:#fff;border-radius:9px;padding:11px 18px;font-size:13px;font-weight:500;z-index:300;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
 .toast.show{opacity:1;transform:translateY(0);}
+@media(max-width:650px){
+  .cg{grid-template-columns:1fr;}
+  .th,.tr{grid-template-columns:2fr 1fr 1fr;}
+  /* Cache Investi, +/- absolu, et colonne supprimer sur mobile */
+  .th>*:nth-child(2),.tr>*:nth-child(2),
+  .th>*:nth-child(4),.tr>*:nth-child(4),
+  .th>*:nth-child(6),.tr>*:nth-child(6){display:none;}
+  .hform-grid{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
@@ -106,14 +136,14 @@ h1{font-size:20px;font-weight:600;}
 <div class="top">
   <div>
     <h1>Mon portefeuille</h1>
-    <div class="sub" id="sub-date">14 positions · Données locales · 08/06/2026</div>
+    <div class="sub" id="sub-date"></div>
   </div>
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
     <button class="rfbtn" onclick="openModal()">+ Position</button>
     <button class="rfbtn" style="background:var(--el);color:var(--text);" onclick="loadCSV()">⟳ Actualiser</button>
     <div class="tgl">
-      <button class="tbtn on" id="beur" onclick="setCur(&#39;EUR&#39;)">€ EUR</button>
-      <button class="tbtn" id="busd" onclick="setCur(&#39;USD&#39;)">$ USD</button>
+      <button class="tbtn on" id="beur" onclick="setCur('EUR')">€ EUR</button>
+      <button class="tbtn" id="busd" onclick="setCur('USD')">$ USD</button>
     </div>
   </div>
 </div>
@@ -125,18 +155,15 @@ h1{font-size:20px;font-weight:600;}
 
 <div class="statusbar status-loading" id="statusbar">
   <span id="statusico">⏳</span>
-  <span id="statusmsg">⏳ URL CSV non configurée — données de démonstration affichées.</span>
+  <span id="statusmsg">Chargement...</span>
 </div>
 
-<!-- Barre auto-refresh -->
-<div class="rfbar">
-  <span class="rfbar-label" id="rf-label">🔄 Actualisation auto :</span>
-  <div class="rfbar-progress"><div class="rfbar-fill" id="rf-fill" style="width: 92.3333%;"></div></div>
-  <span id="rf-countdown" style="white-space:nowrap;font-weight:500;">4:37</span>
-  <button class="rfbar-toggle" id="rf-toggle" onclick="toggleAutoRefresh()">⏸ Pause</button>
+<div class="lastupdate">
+  <span id="lastupdate-txt">Chargement...</span>
+  <span style="color:var(--faint);font-size:10px;">Actualisation manuelle via ⟳</span>
 </div>
 
-<!-- Modal ajout position -->
+<!-- Modal — ajout position -->
 <div class="overlay" id="overlay" onclick="closeModalOutside(event)">
   <div class="modal">
     <h2>Ajouter une position <button class="modal-close" onclick="closeModal()">✕</button></h2>
@@ -169,126 +196,30 @@ h1{font-size:20px;font-weight:600;}
   </div>
 </div>
 
-<!-- Toast notification -->
+<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <div class="tabs">
-  <button class="tab on" onclick="sv(&#39;pos&#39;)">Positions</button>
-  <button class="tab" onclick="sv(&#39;alloc&#39;)">Répartition</button>
-  <button class="tab" onclick="sv(&#39;prog&#39;)">Progression</button>
-  <button class="tab" onclick="sv(&#39;perf&#39;)">Performance</button>
-  <button class="tab" onclick="sv(&#39;watch&#39;)">👁 Watchlist</button>
+  <button class="tab on" onclick="sv('pos')">Positions</button>
+  <button class="tab" onclick="sv('alloc')">Répartition</button>
+  <button class="tab" onclick="sv('prog')">Progression</button>
+  <button class="tab" onclick="sv('perf')">Performance</button>
+  <button class="tab" onclick="sv('watch')">👁 Watchlist</button>
 </div>
 
-<div class="kpis" id="kpis">
-    <div class="kpi"><div class="kl">Valeur totale</div><div class="kv">3 977&nbsp;€</div><div class="ks">14 positions</div></div>
-    <div class="kpi"><div class="kl">Capital investi</div><div class="kv">3 948&nbsp;€</div></div>
-    <div class="kpi"><div class="kl">Plus-value</div><div class="kv up">28,89&nbsp;€</div><div class="ks">+0.7%</div></div>
-    <div class="kpi"><div class="kl">Meilleure</div><div class="kv" style="font-size:15px">SPX <span class="up" style="font-size:13px">+30.0%</span></div></div>
-    <div class="kpi"><div class="kl">À surveiller</div><div class="kv" style="font-size:15px">SOL <span class="dn" style="font-size:13px">-53.5%</span></div></div></div>
+<div class="kpis" id="kpis"></div>
 
 <div id="vpos">
   <div class="card">
-    <div class="th"><div>Actif</div><div class="cr">Investi</div><div class="cr">Valeur actuelle</div><div class="cr">+/-</div><div class="cr">+/- %</div></div>
-    <div id="plist"><div class="tr">
-      <div><span style="font-weight:600">BTC</span><span class="tag tc">Crypto</span><span class="pt">REV</span>
-      <div class="sdesc">Bitcoin · 11/10/2025</div></div>
-      <div class="cr" style="color:var(--muted)">258,02&nbsp;€</div>
-      <div class="cr" style="font-weight:500">196,91&nbsp;€</div>
-      <div class="cr dn" style="font-weight:600">-61,11&nbsp;€</div>
-      <div class="cr"><span class="bge bd2">-23.7%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">BTC</span><span class="tag tc">Crypto</span><span class="pt">REV</span>
-      <div class="sdesc">Bitcoin · 16/05/2025</div></div>
-      <div class="cr" style="color:var(--muted)">302,74&nbsp;€</div>
-      <div class="cr" style="font-weight:500">210,21&nbsp;€</div>
-      <div class="cr dn" style="font-weight:600">-92,53&nbsp;€</div>
-      <div class="cr"><span class="bge bd2">-30.6%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">BTC</span><span class="tag tc">Crypto</span><span class="pt">REV</span>
-      <div class="sdesc">Bitcoin · 26/03/2026</div></div>
-      <div class="cr" style="color:var(--muted)">490,24&nbsp;€</div>
-      <div class="cr" style="font-weight:500">542,16&nbsp;€</div>
-      <div class="cr up" style="font-weight:600">+51,93&nbsp;€</div>
-      <div class="cr"><span class="bge bu2">+10.6%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">BTC</span><span class="tag tc">Crypto</span><span class="pt">REV</span>
-      <div class="sdesc">Bitcoin · 27/03/2026</div></div>
-      <div class="cr" style="color:var(--muted)">447,23&nbsp;€</div>
-      <div class="cr" style="font-weight:500">518,39&nbsp;€</div>
-      <div class="cr up" style="font-weight:600">+71,15&nbsp;€</div>
-      <div class="cr"><span class="bge bu2">+15.9%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">BTC</span><span class="tag tc">Crypto</span><span class="pt">REV</span>
-      <div class="sdesc">Bitcoin · 27/11/2025</div></div>
-      <div class="cr" style="color:var(--muted)">516,04&nbsp;€</div>
-      <div class="cr" style="font-weight:500">429,41&nbsp;€</div>
-      <div class="cr dn" style="font-weight:600">-86,63&nbsp;€</div>
-      <div class="cr"><span class="bge bd2">-16.8%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">SOL</span><span class="tag tc">Crypto</span><span class="pt">REV</span>
-      <div class="sdesc">Solana · 05/11/2025</div></div>
-      <div class="cr" style="color:var(--muted)">201,26&nbsp;€</div>
-      <div class="cr" style="font-weight:500">93,61&nbsp;€</div>
-      <div class="cr dn" style="font-weight:600">-107,65&nbsp;€</div>
-      <div class="cr"><span class="bge bd2">-53.5%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">PLTR</span><span class="tag ta">Action</span><span class="pt">REV</span>
-      <div class="sdesc">Palantir · 30/04/2026</div></div>
-      <div class="cr" style="color:var(--muted)">139,33&nbsp;€</div>
-      <div class="cr" style="font-weight:500">139,33&nbsp;€</div>
-      <div class="cr up" style="font-weight:600">+0,00&nbsp;€</div>
-      <div class="cr"><span class="bge bu2">+0.0%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">GOOGL</span><span class="tag ta">Action</span><span class="pt">REV</span>
-      <div class="sdesc">Alphabet · 30/04/2026</div></div>
-      <div class="cr" style="color:var(--muted)">249,42&nbsp;€</div>
-      <div class="cr" style="font-weight:500">253,42&nbsp;€</div>
-      <div class="cr up" style="font-weight:600">+4,00&nbsp;€</div>
-      <div class="cr"><span class="bge bu2">+1.6%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">SPX</span><span class="tag te">ETF</span><span class="pt">TR</span>
-      <div class="sdesc">S&amp;P 500 · 05/06/2024</div></div>
-      <div class="cr" style="color:var(--muted)">49,88&nbsp;€</div>
-      <div class="cr" style="font-weight:500">64,85&nbsp;€</div>
-      <div class="cr up" style="font-weight:600">+14,96&nbsp;€</div>
-      <div class="cr"><span class="bge bu2">+30.0%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">SPX</span><span class="tag te">ETF</span><span class="pt">TR</span>
-      <div class="sdesc">S&amp;P 500 · 07/11/2024</div></div>
-      <div class="cr" style="color:var(--muted)">26,66&nbsp;€</div>
-      <div class="cr" style="font-weight:500">32,00&nbsp;€</div>
-      <div class="cr up" style="font-weight:600">+5,34&nbsp;€</div>
-      <div class="cr"><span class="bge bu2">+20.0%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">SPX</span><span class="tag te">ETF</span><span class="pt">TR</span>
-      <div class="sdesc">S&amp;P 500 · 05/05/2025</div></div>
-      <div class="cr" style="color:var(--muted)">997,68&nbsp;€</div>
-      <div class="cr" style="font-weight:500">1 240,07&nbsp;€</div>
-      <div class="cr up" style="font-weight:600">+242,39&nbsp;€</div>
-      <div class="cr"><span class="bge bu2">+24.3%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">BTC</span><span class="tag tc">Crypto</span><span class="pt">TR</span>
-      <div class="sdesc">Bitcoin · 05/04/2024</div></div>
-      <div class="cr" style="color:var(--muted)">20,15&nbsp;€</div>
-      <div class="cr" style="font-weight:500">22,50&nbsp;€</div>
-      <div class="cr up" style="font-weight:600">+2,35&nbsp;€</div>
-      <div class="cr"><span class="bge bu2">+11.7%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">BTC</span><span class="tag tc">Crypto</span><span class="pt">TR</span>
-      <div class="sdesc">Bitcoin · 29/03/2025</div></div>
-      <div class="cr" style="color:var(--muted)">49,36&nbsp;€</div>
-      <div class="cr" style="font-weight:500">41,61&nbsp;€</div>
-      <div class="cr dn" style="font-weight:600">-7,75&nbsp;€</div>
-      <div class="cr"><span class="bge bd2">-15.7%</span></div>
-    </div><div class="tr">
-      <div><span style="font-weight:600">TBSO</span><span class="tag ta">Action</span><span class="pt">TR</span>
-      <div class="sdesc">TBSO · 02/06/2026</div></div>
-      <div class="cr" style="color:var(--muted)">200,12&nbsp;€</div>
-      <div class="cr" style="font-weight:500">192,56&nbsp;€</div>
-      <div class="cr dn" style="font-weight:600">-7,56&nbsp;€</div>
-      <div class="cr"><span class="bge bd2">-3.8%</span></div>
-    </div></div>
+    <div class="th">
+      <div>Actif</div>
+      <div class="cr">Investi</div>
+      <div class="cr">Valeur actuelle</div>
+      <div class="cr">+/-</div>
+      <div class="cr">+/- %</div>
+      <div></div>
+    </div>
+    <div id="plist"></div>
   </div>
 </div>
 
@@ -309,10 +240,26 @@ h1{font-size:20px;font-weight:600;}
     <div class="cwt"><canvas id="ch"></canvas></div>
   </div>
   <div class="card">
-    <div class="th" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr"><div>Date</div><div class="cr">Valeur</div><div class="cr">Investi</div><div class="cr">PL</div><div class="cr">vs préc.</div></div>
+    <div class="th" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr">
+      <div>Date</div><div class="cr">Valeur</div><div class="cr">Investi</div>
+      <div class="cr">PL</div><div class="cr">vs préc.</div><div></div>
+    </div>
     <div id="hlist"></div>
   </div>
-  <button class="abtn" onclick="addH()">+ Ajouter un point mensuel</button>
+  <!-- FIX B5 : formulaire inline, plus de prompt() -->
+  <button class="abtn" onclick="toggleHistForm()">+ Ajouter un point mensuel</button>
+  <div class="hform" id="hform">
+    <div class="hform-grid">
+      <div class="fg"><label>Date *</label><input id="h-dt" placeholder="JJ/MM/AAAA" maxlength="10"></div>
+      <div class="fg"><label>Valeur totale ($) *</label><input id="h-v" type="number" placeholder="ex: 4800" min="0" step="0.01"></div>
+      <div class="fg"><label>Capital investi ($) *</label><input id="h-i" type="number" placeholder="ex: 4600" min="0" step="0.01"></div>
+    </div>
+    <div id="h-error" style="color:var(--red);font-size:12px;margin-bottom:10px;display:none;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-p" onclick="submitHist()">Ajouter ✓</button>
+      <button class="btn-c" onclick="toggleHistForm()">Annuler</button>
+    </div>
+  </div>
 </div>
 
 <div id="vperf" style="display:none">
@@ -337,221 +284,422 @@ h1{font-size:20px;font-weight:600;}
 
 <script>
 // ══════════════════════════════════════════════════════════════
-// CONFIG — À remplacer avec ton URL CSV Google Sheets
+// CONFIG
+// Laisser CSV_URL vide ("") pour rester en mode données locales.
+// Renseigner avec l'URL "Publier en tant que CSV" de Google Sheets.
 // ══════════════════════════════════════════════════════════════
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSolXVYxG0NkMPogRULOG8ei7LM1J4H207wdOtKc1XJTvr8tW73R9yFWB49QCF-zVYtva-B-_KJXclp/pub?gid=149913535&single=true&output=csv";
-// Exemple: "https://docs.google.com/spreadsheets/d/XXXX/pub?gid=0&single=true&output=csv"
+
+// Index de colonnes du CSV (0-based, après parsing des guillemets).
+// Structure réelle du sheet :
+//  0=#  1=Produit  2=Nom  3=Plateforme  4=Date  5=Ticker
+//  6=Prix achat($)  7=Montant investi($)  8=Nb unités
+//  9=Prix actuel($) AUTO  10=Valeur act.($)  11=Valeur act.(€)  ...
+const CSV_COLS = { type:1, nom:2, plat:3, dt:4, pa:6, inv:7, px:9 };
+
 
 // ══════════════════════════════════════════════════════════════
-// DONNÉES STATIQUES (fallback si CSV non dispo + watchlist)
+// DONNÉES STATIQUES — fallback + watchlist
 // ══════════════════════════════════════════════════════════════
 const FALLBACK_POS = [
-  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Revolut',        dt:'11/10/2025',inv:300,   pa:100000,   px:76314},
-  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Revolut',        dt:'16/05/2025',inv:352,   pa:109907,   px:76314},
-  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Revolut',        dt:'26/03/2026',inv:570,   pa:69005,    px:76314},
-  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Revolut',        dt:'27/03/2026',inv:520,   pa:65839.53, px:76314},
-  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Revolut',        dt:'27/11/2025',inv:600,   pa:91709.18, px:76314},
-  {type:'Crypto',nom:'Solana',  t:'SOL', pl:'Revolut',        dt:'05/11/2025',inv:234,   pa:178.26,   px:82.91},
-  {type:'Action',nom:'Palantir',t:'PLTR',pl:'Revolut',        dt:'30/04/2026',inv:162,   pa:137.72,   px:137.72},
-  {type:'Action',nom:'Alphabet',t:'GOOGL',pl:'Revolut',       dt:'30/04/2026',inv:290,   pa:378.04,   px:384.10},
-  {type:'ETF',   nom:'S&P 500', t:'SPX', pl:'Trade Republic', dt:'05/06/2024',inv:58,    pa:594.04,   px:772.25},
-  {type:'ETF',   nom:'S&P 500', t:'SPX', pl:'Trade Republic', dt:'07/11/2024',inv:31,    pa:643.39,   px:772.25},
-  {type:'ETF',   nom:'S&P 500', t:'SPX', pl:'Trade Republic', dt:'05/05/2025',inv:1160,  pa:621.30,   px:772.25},
-  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Trade Republic', dt:'05/04/2024',inv:23.43, pa:68347.60, px:76314},
-  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Trade Republic', dt:'29/03/2025',inv:57.39, pa:90526.56, px:76314},
-  {type:'Action',nom:'TBSO',    t:'TBSO',pl:'Trade Republic', dt:'02/06/2026',inv:232.68,pa:5.56,     px:5.35},
+  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Revolut',        dt:'11/10/2025',inv:300,    pa:100000,    px:76314  },
+  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Revolut',        dt:'16/05/2025',inv:352,    pa:109907,    px:76314  },
+  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Revolut',        dt:'26/03/2026',inv:570,    pa:69005,     px:76314  },
+  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Revolut',        dt:'27/03/2026',inv:520,    pa:65839.53,  px:76314  },
+  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Revolut',        dt:'27/11/2025',inv:600,    pa:91709.18,  px:76314  },
+  {type:'Crypto',nom:'Solana',  t:'SOL', pl:'Revolut',        dt:'05/11/2025',inv:234,    pa:178.26,    px:82.91  },
+  {type:'Action',nom:'Palantir',t:'PLTR',pl:'Revolut',        dt:'30/04/2026',inv:162,    pa:137.72,    px:137.72 },
+  {type:'Action',nom:'Alphabet',t:'GOOGL',pl:'Revolut',       dt:'30/04/2026',inv:290,    pa:378.04,    px:384.10 },
+  {type:'ETF',   nom:'S&P 500', t:'SPX', pl:'Trade Republic', dt:'05/06/2024',inv:58,     pa:594.04,    px:772.25 },
+  {type:'ETF',   nom:'S&P 500', t:'SPX', pl:'Trade Republic', dt:'07/11/2024',inv:31,     pa:643.39,    px:772.25 },
+  {type:'ETF',   nom:'S&P 500', t:'SPX', pl:'Trade Republic', dt:'05/05/2025',inv:1160,   pa:621.30,    px:772.25 },
+  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Trade Republic', dt:'05/04/2024',inv:23.43,  pa:68347.60,  px:76314  },
+  {type:'Crypto',nom:'Bitcoin', t:'BTC', pl:'Trade Republic', dt:'29/03/2025',inv:57.39,  pa:90526.56,  px:76314  },
+  {type:'Action',nom:'TBSO',    t:'TBSO',pl:'Trade Republic', dt:'02/06/2026',inv:232.68, pa:5.56,      px:5.35   },
 ];
 
 const WATCH = [
-  {t:'SFTBY', nom:'SoftBank Group (ADR)',          sect:'Asie · IA · Data centers',
-   px:69.00, d1:0.5, w1:-2.1, m1:17.8, ytd:112.2,
-   cons:'HOLD', perso:'NOTHING',
-   note:'Au sommet historique absolu (+112% YTD). Deutsche Bank vient de passer de Buy à Hold le 2 juin. Le consensus de 19 analystes donne un objectif moyen 20% SOUS le prix actuel — autrement dit, même ceux qui aiment la boîte pensent qu\'elle est trop chère maintenant. Résultats extraordinaires (+339% de bénéfices) mais déjà dans le prix. Masayoshi Son lui-même anticipe de la volatilité. À suivre, entrer seulement sur une correction de -15% minimum ou après les résultats du 11 août 2026.'},
-  {t:'CHPX',  nom:'Global X AI Semi & Quantum',     sect:'Quantique · IA · Semi · Asie',
-   px:105.36, d1:4.0, w1:5.2, m1:9.8, ytd:48.0,
-   cons:'BUY', perso:'BUY',
-   note:'Ton meilleur choix "tout-en-un" selon ton profil. Couvre les 3 thèmes qui t\'intéressent : quantique, IA/data centers, et semi-conducteurs, avec une dimension asiatique via Mirae Asset (gestionnaire coréen). Signal technique Strong Buy. 37 lignes = diversification réelle. Frais raisonnables (0,50%). Accessible en UCITS. Seul point de vigilance : proche du haut 52 semaines. Stratégie recommandée : entrée en DCA sur 3-4 mois plutôt qu\'une seule fois.'},
-  {t:'VPN',   nom:'Global X Data Center REITs',     sect:'Data centers · Énergie · Infrastructure',
-   px:19.47, d1:-0.3, w1:1.1, m1:3.5, ytd:12.0,
-   cons:'BUY', perso:'HOLD',
-   note:'ETF infrastructure physique : les bâtiments, serveurs et câbles qui font tourner l\'IA. 67% US / 26% Asie. Joue directement l\'angle "guerre des data centers et de l\'électricité" que tu as identifié (EDF, SoftBank en France, etc.). Verse du revenu (REITs). MAIS : frais élevés à 0,70%, pas d\'expo quantique, et le consensus analystes dit BUY sans grande conviction. Reco : intéressant en complément de CHPX, pas à la place.'},
-  {t:'QNTM',  nom:'VanEck Quantum Computing UCITS', sect:'Quantique pur · Leaders mondiaux',
-   px:33.37, d1:1.2, w1:-7.3, m1:14.0, ytd:33.7,
-   cons:'BUY', perso:'NOTHING',
-   note:'Premier ETF quantique européen (UCITS, donc accessible). 896M$ d\'actifs, bon signe. Top positions : IonQ, Rigetti, D-Wave, Nokia, Alphabet. Mais attention : -7% sur la dernière semaine, très volatil. Pour toi : les analystes disent BUY car le quantique est une vraie tendance de fond, mais le risque de -40/50% sur 6 mois est réel. Réserve ce pari pour quand tu auras renforcé tes positions cœur (CHPX, Alphabet). Surveille si ça corrige sous $28.'},
-  {t:'QTUM',  nom:'Defiance Quantum (US)',          sect:'Quantique · Machine Learning',
-   px:118.00, d1:0.9, w1:4.1, m1:12.5, ytd:42.0,
-   cons:'BUY', perso:'NOTHING',
-   note:'La référence historique du secteur quantique : 78 sociétés, 3,5 Md$ d\'actifs, +394% depuis 2018. Excellent baromètre pour suivre la tendance globale du quantique. MAIS : ETF coté aux US, souvent non accessible directement depuis l\'UE en raison de la réglementation PRIIPS. Utilise-le comme indicateur de sentiment plutôt que comme achat direct. Si tu veux le quantique, QNTM est l\'équivalent européen accessible.'},
+  { t:'SFTBY', nom:'SoftBank Group (ADR)', sect:'Asie · IA · Data centers',
+    px:69.00, d1:0.5, w1:-2.1, m1:17.8, ytd:112.2, cons:'HOLD', perso:'NOTHING',
+    note:'Au sommet historique absolu (+112% YTD). Deutsche Bank vient de passer de Buy à Hold le 2 juin. Le consensus de 19 analystes donne un objectif moyen 20% SOUS le prix actuel. Résultats extraordinaires (+339% de bénéfices) mais déjà dans le prix. À suivre, entrer seulement sur une correction de -15% minimum ou après les résultats du 11 août 2026.' },
+  { t:'CHPX', nom:'Global X AI Semi & Quantum', sect:'Quantique · IA · Semi · Asie',
+    px:105.36, d1:4.0, w1:5.2, m1:9.8, ytd:48.0, cons:'BUY', perso:'BUY',
+    note:'Ton meilleur choix "tout-en-un" selon ton profil. Couvre les 3 thèmes qui t\'intéressent : quantique, IA/data centers, semi-conducteurs, avec une dimension asiatique via Mirae Asset. Signal technique Strong Buy. 37 lignes = diversification réelle. Frais raisonnables (0,50%). Stratégie recommandée : entrée en DCA sur 3-4 mois.' },
+  { t:'VPN', nom:'Global X Data Center REITs', sect:'Data centers · Énergie · Infrastructure',
+    px:19.47, d1:-0.3, w1:1.1, m1:3.5, ytd:12.0, cons:'BUY', perso:'HOLD',
+    note:'ETF infrastructure physique : les bâtiments, serveurs et câbles qui font tourner l\'IA. 67% US / 26% Asie. Verse du revenu (REITs). Frais élevés à 0,70%, pas d\'expo quantique. Reco : intéressant en complément de CHPX, pas à la place.' },
+  { t:'QNTM', nom:'VanEck Quantum Computing UCITS', sect:'Quantique pur · Leaders mondiaux',
+    px:33.37, d1:1.2, w1:-7.3, m1:14.0, ytd:33.7, cons:'BUY', perso:'NOTHING',
+    note:'Premier ETF quantique européen (UCITS). 896M$ d\'actifs. Top positions : IonQ, Rigetti, D-Wave, Nokia, Alphabet. Attention : -7% sur la dernière semaine, très volatil. Réserve ce pari pour après avoir renforcé tes positions cœur. Surveille si ça corrige sous $28.' },
+  { t:'QTUM', nom:'Defiance Quantum (US)', sect:'Quantique · Machine Learning',
+    px:118.00, d1:0.9, w1:4.1, m1:12.5, ytd:42.0, cons:'BUY', perso:'NOTHING',
+    note:'La référence historique du secteur quantique : 78 sociétés, 3,5 Md$ d\'actifs, +394% depuis 2018. MAIS : souvent non accessible depuis l\'UE (réglementation PRIIPS). Utilise-le comme indicateur de sentiment. Si tu veux le quantique, QNTM est l\'équivalent européen accessible.' },
 ];
+
+// Correspondance nom complet → ticker pour le parsing CSV
+const TICKER_MAP = {
+  'Bitcoin':'BTC','Solana':'SOL','Palantir':'PLTR',
+  'Alphabet':'GOOGL','S&P 500':'SPX','TBSO':'TBSO',
+};
+
+// Palettes de couleurs
+const CA  = {BTC:'#EF9F27',SOL:'#9F77DD',PLTR:'#378ADD',GOOGL:'#1D9E75',SPX:'#D85A30',TBSO:'#D4537E',SFTBY:'#F57C00',CHPX:'#7B1FA2',VPN:'#0277BD',QNTM:'#00695C',QTUM:'#4527A0'};
+const CC  = {Crypto:'#EF9F27',Action:'#378ADD',ETF:'#1D9E75'};
+const CPL = {Revolut:'#7F77DD','Trade Republic':'#1D9E75'};
+const TC  = {Crypto:'tc',Action:'ta',ETF:'te'};
+
+// ══════════════════════════════════════════════════════════════
+// FIX B3 : PERSISTANCE LOCALE (localStorage)
+// Les positions ajoutées manuellement et l'historique survivent aux refreshs.
+// ══════════════════════════════════════════════════════════════
+const LS_POS  = 'dashboard_local_pos';
+const LS_HIST = 'dashboard_hist';
+
+function loadLocalPos() {
+  try { return JSON.parse(localStorage.getItem(LS_POS)) || []; }
+  catch { return []; }
+}
+function saveLocalPos() {
+  localStorage.setItem(LS_POS, JSON.stringify(localPos));
+}
+function loadHist() {
+  try { return JSON.parse(localStorage.getItem(LS_HIST)) || null; }
+  catch { return null; }
+}
+function saveHist() {
+  localStorage.setItem(LS_HIST, JSON.stringify(hist));
+}
 
 // ══════════════════════════════════════════════════════════════
 // ÉTAT
 // ══════════════════════════════════════════════════════════════
-let pos = FALLBACK_POS.map(p=>({...p,id:Math.random()}));
-let hist = [{dt:'30/04/2026',v:4400.43,i:4357.82},{dt:'02/06/2026',v:4624.09,i:4590.50}];
-let cur = 'EUR', ch = {}, csvLoaded = false;
+let csvPos   = FALLBACK_POS.map(p => ({...p, id: crypto.randomUUID(), src: 'fallback'}));
+let localPos = loadLocalPos();
+let pos      = [...csvPos, ...localPos];
+let hist     = loadHist() || [
+  {dt:'30/04/2026', v:4400.43, i:4357.82},
+  {dt:'02/06/2026', v:4624.09, i:4590.50},
+];
+let cur      = 'EUR';
+let charts   = {};
+let csvLoaded = false;
 
-const CA={'BTC':'#EF9F27','SOL':'#9F77DD','PLTR':'#378ADD','GOOGL':'#1D9E75','SPX':'#D85A30','TBSO':'#D4537E','SFTBY':'#F57C00','CHPX':'#7B1FA2','VPN':'#0277BD','QNTM':'#00695C','QTUM':'#4527A0'};
-const CC={'Crypto':'#EF9F27','Action':'#378ADD','ETF':'#1D9E75'};
-const CPL={'Revolut':'#7F77DD','Trade Republic':'#1D9E75'};
-const TC={'Crypto':'tc','Action':'ta','ETF':'te'};
-
-function getFx(){return parseFloat(document.getElementById('fx').value)||1.1627;}
-function cv(usd){return cur==='USD'?usd:usd/getFx();}
-function f2(usd){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:cur,minimumFractionDigits:2,maximumFractionDigits:2}).format(cv(usd));}
-function f0(usd){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:cur,maximumFractionDigits:0}).format(cv(usd));}
-function fp(v){return(v>=0?'+':'')+v.toFixed(1)+'%';}
-function calc(p){const n=p.inv/p.pa,val=n*p.px,pl=val-p.inv;return{n,val,pl,pct:pl/p.inv*100};}
+function rebuildPos() {
+  pos = [...csvPos, ...localPos];
+}
 
 // ══════════════════════════════════════════════════════════════
-// CHARGEMENT CSV GOOGLE SHEETS
+// UTILITAIRES
 // ══════════════════════════════════════════════════════════════
-async function loadCSV(){
-  if(CSV_URL === "https://docs.google.com/spreadsheets/d/e/2PACX-1vSolXVYxG0NkMPogRULOG8ei7LM1J4H207wdOtKc1XJTvr8tW73R9yFWB49QCF-zVYtva-B-_KJXclp/pub?gid=149913535&single=true&output=csv"){
-    setStatus('loading','⏳ URL CSV non configurée — données de démonstration affichées.');
-    rAll(); return;
+function getFx()  { return parseFloat(document.getElementById('fx').value) || 1.1627; }
+function cv(usd)  { return cur === 'USD' ? usd : usd / getFx(); }
+function f2(usd)  {
+  return new Intl.NumberFormat('fr-FR', {style:'currency', currency:cur, minimumFractionDigits:2, maximumFractionDigits:2}).format(cv(usd));
+}
+function f0(usd)  {
+  return new Intl.NumberFormat('fr-FR', {style:'currency', currency:cur, maximumFractionDigits:0}).format(cv(usd));
+}
+function fp(v)    { return (v >= 0 ? '+' : '') + v.toFixed(1) + '%'; }
+function calc(p)  {
+  const n   = p.inv / p.pa;
+  const val = n * p.px;
+  const pl  = val - p.inv;
+  return { n, val, pl, pct: pl / p.inv * 100 };
+}
+
+// ══════════════════════════════════════════════════════════════
+// FIX B2 : CHARGEMENT CSV GOOGLE SHEETS
+// La condition vide ("") est la seule qui court-circuite le chargement.
+// ══════════════════════════════════════════════════════════════
+
+// Parser CSV correct : gère les champs entre guillemets contenant des virgules
+// (ex: "65,839.53" ne doit pas être splitté en deux colonnes)
+function parseCSVRow(line) {
+  const result = [];
+  let cell = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQ = !inQ; }
+    else if (c === ',' && !inQ) { result.push(cell); cell = ''; }
+    else { cell += c; }
   }
-  setStatus('loading','⏳ Connexion à Google Sheets...');
+  result.push(cell);
+  return result;
+}
+
+async function loadCSV() {
+  if (!CSV_URL) {
+    setStatus('loading', '⏳ URL CSV non configurée — données de démonstration affichées.');
+    setLastUpdate('Données locales');
+    rAll();
+    return;
+  }
+  // Ouverture directe en local (file://) : les requêtes réseau sont bloquées par le navigateur.
+  // Déployer sur GitHub Pages pour que la synchro Google Sheets fonctionne.
+  if (window.location.protocol === 'file:') {
+    setStatus('err', '⚠️ Fichier ouvert en local — déployez sur GitHub Pages pour synchroniser Google Sheets.');
+    setLastUpdate('Données de démonstration (accès local)');
+    rAll();
+    return;
+  }
+  setStatus('loading', '⏳ Connexion à Google Sheets...');
   try {
-    const res = await fetch(CSV_URL, {cache:'no-cache'});
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const txt = await res.text();
-    const rows = txt.trim().split('\n').map(r=>r.split(','));
-    // Format attendu: Type,Nom,Plateforme,Date,PrixAchat$,Investi$,PrixActuel$
-    // (on skip la ligne d'en-tête et la ligne TOTAL)
+    const res = await fetch(CSV_URL, {cache: 'no-cache'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const txt  = await res.text();
+    const rows = txt.trim().split('\n').map(parseCSVRow);
+    const {type:tc, nom:nc, plat:pc, dt:dc, pa:pac, inv:ic, px:pxc} = CSV_COLS;
+    // Nettoie un nombre au format français : "$61 819,34" → 61819.34
+    const cleanNum = s => parseFloat((s||'').replace(/[$€\s]/g,'').replace(',','.'));
     const parsed = [];
-    for(let i=1;i<rows.length;i++){
-      const r=rows[i];
-      if(!r[0]||r[0].toLowerCase().includes('total')||r[0].trim()==='') continue;
-      const pa=parseFloat((r[6]||'').replace(/[$€,"]/g,''));
-      const inv=parseFloat((r[7]||'').replace(/[$€,"]/g,''));
-      const px=parseFloat((r[10]||'').replace(/[$€,"]/g,''));
-      if(!pa||!inv||isNaN(px)) continue;
-      const nom=(r[2]||'').trim();
-      const tickerMap={'Bitcoin':'BTC','Solana':'SOL','Palantir':'PLTR','Alphabet':'GOOGL','S&P 500':'SPX','TBSO':'TBSO'};
-      parsed.push({id:Math.random(),type:(r[1]||'').trim(),nom,t:tickerMap[nom]||nom.substring(0,4).toUpperCase(),pl:(r[3]||'').trim(),dt:(r[4]||'').trim(),inv,pa,px});
+    for (let i = 1; i < rows.length; i++) {
+      const r = rows[i];
+      if (!r[0] || r[0].toLowerCase().includes('total') || r[0].trim() === '') continue;
+      const pa  = cleanNum(r[pac]);
+      const inv = cleanNum(r[ic]);
+      const px  = cleanNum(r[pxc]);
+      if (!pa || !inv || !px) continue;
+      const nom = (r[nc] || '').trim();
+      parsed.push({
+        id:   crypto.randomUUID(),
+        src:  'csv',
+        type: (r[tc] || '').trim(),
+        nom,
+        t:    TICKER_MAP[nom] || nom.substring(0, 4).toUpperCase(),
+        pl:   (r[pc] || '').trim(),
+        dt:   (r[dc] || '').trim(),
+        inv, pa, px,
+      });
     }
-    if(parsed.length>0){
-      pos=parsed; csvLoaded=true;
-      setStatus('ok','✅ Données Google Sheets chargées — '+new Date().toLocaleTimeString('fr-FR'));
-    } else {
-      throw new Error('Aucune ligne valide parsée');
-    }
-  } catch(e){
-    setStatus('err','❌ Impossible de lire le CSV Google Sheets ('+e.message+'). Données de démonstration affichées.');
+    if (parsed.length === 0) throw new Error('Aucune ligne valide parsée');
+    csvPos = parsed;
+    csvLoaded = true;
+    rebuildPos();
+    const ts = new Date().toLocaleString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+    setStatus('ok', '✅ Google Sheets synchronisé');
+    setLastUpdate('Dernière synchro : ' + ts);
+  } catch(e) {
+    csvPos = FALLBACK_POS.map(p => ({...p, id: crypto.randomUUID(), src: 'fallback'}));
+    rebuildPos();
+    setStatus('err', '❌ Google Sheets inaccessible (' + e.message + ') — données de démonstration.');
+    setLastUpdate('Échec de synchro — données locales affichées');
   }
   rAll();
 }
 
-function setStatus(type,msg){
-  const sb=document.getElementById('statusbar');
-  sb.className='statusbar status-'+type;
-  document.getElementById('statusico').textContent=type==='ok'?'✅':type==='err'?'❌':'⏳';
-  document.getElementById('statusmsg').textContent=msg;
+function setStatus(type, msg) {
+  document.getElementById('statusbar').className = 'statusbar status-' + type;
+  document.getElementById('statusico').textContent = type === 'ok' ? '✅' : type === 'err' ? '❌' : '⏳';
+  document.getElementById('statusmsg').textContent = msg;
 }
 
 // ══════════════════════════════════════════════════════════════
-// RENDER FONCTIONS
+// RENDER
 // ══════════════════════════════════════════════════════════════
-function rKPI(){
-  let ti=0,tv=0,best=pos[0],worst=pos[0];
-  pos.forEach(p=>{const c=calc(p);ti+=p.inv;tv+=c.val;if(c.pct>calc(best).pct)best=p;if(c.pct<calc(worst).pct)worst=p;});
-  const tpl=tv-ti,tpct=tpl/ti*100;
-  document.getElementById('kpis').innerHTML=`
+function rKPI() {
+  if (!pos.length) return;
+  let ti = 0, tv = 0, best = pos[0], worst = pos[0];
+  pos.forEach(p => {
+    const c = calc(p);
+    ti += p.inv; tv += c.val;
+    if (c.pct > calc(best).pct)  best  = p;
+    if (c.pct < calc(worst).pct) worst = p;
+  });
+  const tpl = tv - ti, tpct = tpl / ti * 100;
+  document.getElementById('kpis').innerHTML = `
     <div class="kpi"><div class="kl">Valeur totale</div><div class="kv">${f0(tv)}</div><div class="ks">${pos.length} positions</div></div>
     <div class="kpi"><div class="kl">Capital investi</div><div class="kv">${f0(ti)}</div></div>
     <div class="kpi"><div class="kl">Plus-value</div><div class="kv ${tpl>=0?'up':'dn'}">${f2(tpl)}</div><div class="ks">${fp(tpct)}</div></div>
     <div class="kpi"><div class="kl">Meilleure</div><div class="kv" style="font-size:15px">${best.t} <span class="${calc(best).pct>=0?'up':'dn'}" style="font-size:13px">${fp(calc(best).pct)}</span></div></div>
     <div class="kpi"><div class="kl">À surveiller</div><div class="kv" style="font-size:15px">${worst.t} <span class="${calc(worst).pct>=0?'up':'dn'}" style="font-size:13px">${fp(calc(worst).pct)}</span></div></div>`;
-  document.getElementById('sub-date').textContent=pos.length+' positions · '+(csvLoaded?'Données Google Sheets':'Données locales')+' · '+new Date().toLocaleDateString('fr-FR');
+  document.getElementById('sub-date').textContent =
+    pos.length + ' positions · ' +
+    (csvLoaded ? 'Google Sheets' : 'Données locales') +
+    ' · ' + new Date().toLocaleDateString('fr-FR');
 }
 
-function rPos(){
-  document.getElementById('plist').innerHTML=pos.map(p=>{
-    const c=calc(p),bc=c.pct>0?'bu2':c.pct<0?'bd2':'bn2';
-    return`<div class="tr">
-      <div><span style="font-weight:600">${p.t}</span><span class="tag ${TC[p.type]||'te'}">${p.type}</span><span class="pt">${p.pl==='Trade Republic'?'TR':'REV'}</span>
-      <div class="sdesc">${p.nom} · ${p.dt}</div></div>
+function rPos() {
+  document.getElementById('plist').innerHTML = pos.map(p => {
+    const c  = calc(p);
+    const bc = c.pct > 0 ? 'bu2' : c.pct < 0 ? 'bd2' : 'bn2';
+    // Les positions locales ont un badge distinct et un bouton supprimer
+    const platBadge = p.src === 'local'
+      ? `<span class="pt-local">LOCAL</span>`
+      : `<span class="pt">${p.pl === 'Trade Republic' ? 'TR' : 'REV'}</span>`;
+    const delBtn = p.src === 'local'
+      ? `<button class="del-btn" onclick="deleteLocalPos('${p.id}')" title="Supprimer cette position">✕</button>`
+      : `<div></div>`;
+    return `<div class="tr">
+      <div>
+        <span style="font-weight:600">${p.t}</span>
+        <span class="tag ${TC[p.type]||'te'}">${p.type}</span>
+        ${platBadge}
+        <div class="sdesc">${p.nom} · ${p.dt}</div>
+      </div>
       <div class="cr" style="color:var(--muted)">${f2(p.inv)}</div>
       <div class="cr" style="font-weight:500">${f2(c.val)}</div>
       <div class="cr ${c.pl>=0?'up':'dn'}" style="font-weight:600">${c.pl>=0?'+':''}${f2(c.pl)}</div>
       <div class="cr"><span class="bge ${bc}">${fp(c.pct)}</span></div>
+      ${delBtn}
     </div>`;
   }).join('');
 }
 
-function dc(k){if(ch[k]){ch[k].destroy();delete ch[k];}}
-function mkD(id,lid,data,cols){
+function dc(k) {
+  if (charts[k]) { charts[k].destroy(); delete charts[k]; }
+}
+
+function mkD(id, lid, data, cols) {
   dc(id);
-  const lb=Object.keys(data),vs=Object.values(data),tot=vs.reduce((a,b)=>a+b,0);
-  document.getElementById(lid).innerHTML=lb.map((l,i)=>`<div class="li"><span class="ld" style="background:${cols[l]||'#888'}"></span><span>${l}</span><span style="margin-left:auto;color:var(--muted)">${f0(vs[i])} · ${(vs[i]/tot*100).toFixed(1)}%</span></div>`).join('');
-  ch[id]=new Chart(document.getElementById(id).getContext('2d'),{
-    type:'doughnut',
-    data:{labels:lb,datasets:[{data:vs.map(v=>Math.round(cv(v))),backgroundColor:lb.map(l=>cols[l]||'#888'),borderWidth:2,borderColor:'transparent'}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${f0(c.raw*(cur==='USD'?1:getFx()))} (${(c.raw/vs.map(cv).reduce((a,b)=>a+b,0)*100).toFixed(1)}%)`}}}}
+  const lb  = Object.keys(data), vs = Object.values(data);
+  const tot = vs.reduce((a, b) => a + b, 0);
+  document.getElementById(lid).innerHTML = lb.map((l, i) =>
+    `<div class="li"><span class="ld" style="background:${cols[l]||'#888'}"></span><span>${l}</span><span style="margin-left:auto;color:var(--muted)">${f0(vs[i])} · ${(vs[i]/tot*100).toFixed(1)}%</span></div>`
+  ).join('');
+  charts[id] = new Chart(document.getElementById(id).getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: lb,
+      datasets: [{
+        data: vs.map(v => Math.round(cv(v))),
+        backgroundColor: lb.map(l => cols[l] || '#888'),
+        borderWidth: 2, borderColor: 'transparent',
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: {
+        legend: {display: false},
+        tooltip: {callbacks: {label: c => `${c.label}: ${f0(c.raw*(cur==='USD'?1:getFx()))} (${(c.raw/vs.map(cv).reduce((a,b)=>a+b,0)*100).toFixed(1)}%)`}},
+      },
+    },
   });
 }
 
-function rAlloc(){
-  let bA={},bC={},bPI={},bPV={};
-  pos.forEach(p=>{const c=calc(p);bA[p.t]=(bA[p.t]||0)+c.val;bC[p.type]=(bC[p.type]||0)+c.val;bPI[p.pl]=(bPI[p.pl]||0)+p.inv;bPV[p.pl]=(bPV[p.pl]||0)+c.val;});
-  mkD('ca','la',bA,CA); mkD('cc','lc',bC,CC);
+function rAlloc() {
+  let bA={}, bC={}, bPI={}, bPV={};
+  pos.forEach(p => {
+    const c = calc(p);
+    bA[p.t]    = (bA[p.t]    || 0) + c.val;
+    bC[p.type] = (bC[p.type] || 0) + c.val;
+    bPI[p.pl]  = (bPI[p.pl]  || 0) + p.inv;
+    bPV[p.pl]  = (bPV[p.pl]  || 0) + c.val;
+  });
+  mkD('ca', 'la', bA, CA);
+  mkD('cc', 'lc', bC, CC);
   dc('cp');
-  const pk=Object.keys(bPV);
-  ch['cp']=new Chart(document.getElementById('cp').getContext('2d'),{
-    type:'bar',
-    data:{labels:pk,datasets:[{label:'Investi',data:pk.map(k=>Math.round(cv(bPI[k]))),backgroundColor:'#B5D4F4',borderRadius:4},{label:'Valeur',data:pk.map(k=>Math.round(cv(bPV[k]))),backgroundColor:pk.map(k=>CPL[k]||'#888'),borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{callback:v=>f0(v*(cur==='USD'?1:getFx()))}},y:{grid:{display:false}}}}
+  const pk = Object.keys(bPV);
+  charts['cp'] = new Chart(document.getElementById('cp').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: pk,
+      datasets: [
+        {label:'Investi', data: pk.map(k => Math.round(cv(bPI[k]))), backgroundColor:'#B5D4F4', borderRadius:4},
+        {label:'Valeur',  data: pk.map(k => Math.round(cv(bPV[k]))), backgroundColor: pk.map(k => CPL[k]||'#888'), borderRadius:4},
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: {legend: {display:true, position:'bottom', labels:{font:{size:11}, boxWidth:10}}},
+      scales: {
+        x: {grid:{display:false}, ticks:{callback: v => f0(v*(cur==='USD'?1:getFx()))}},
+        y: {grid:{display:false}},
+      },
+    },
   });
 }
 
-function rProg(){
+function rProg() {
   dc('ch');
-  ch['ch']=new Chart(document.getElementById('ch').getContext('2d'),{
-    type:'line',
-    data:{labels:hist.map(h=>h.dt),datasets:[
-      {label:'Valeur',data:hist.map(h=>Math.round(cv(h.v))),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.1)',fill:true,tension:0.3,pointRadius:5,pointBackgroundColor:'#1D9E75',borderWidth:2},
-      {label:'Investi',data:hist.map(h=>Math.round(cv(h.i))),borderColor:'#888',borderDash:[5,5],pointRadius:4,tension:0,fill:false,borderWidth:1.5}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:10}}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{callback:v=>f0(v*(cur==='USD'?1:getFx()))}}}}
+  charts['ch'] = new Chart(document.getElementById('ch').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: hist.map(h => h.dt),
+      datasets: [
+        {label:'Valeur',  data: hist.map(h => Math.round(cv(h.v))), borderColor:'#1D9E75', backgroundColor:'rgba(29,158,117,0.1)', fill:true, tension:0.3, pointRadius:5, pointBackgroundColor:'#1D9E75', borderWidth:2},
+        {label:'Investi', data: hist.map(h => Math.round(cv(h.i))), borderColor:'#888', borderDash:[5,5], pointRadius:4, tension:0, fill:false, borderWidth:1.5},
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {legend: {position:'bottom', labels:{font:{size:11}, boxWidth:10}}},
+      scales: {
+        x: {grid:{display:false}},
+        y: {grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback: v => f0(v*(cur==='USD'?1:getFx()))}},
+      },
+    },
   });
-  document.getElementById('hlist').innerHTML=hist.map((h,i)=>{
-    const pl=h.v-h.i,pct=pl/h.i*100,prev=i>0?(h.v-hist[i-1].v)/hist[i-1].v*100:null;
-    return`<div class="tr" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr">
-      <div style="font-weight:600">${h.dt}</div><div class="cr">${f0(h.v)}</div>
+  document.getElementById('hlist').innerHTML = hist.map((h, i) => {
+    const pl   = h.v - h.i, pct = pl / h.i * 100;
+    const prev = i > 0 ? (h.v - hist[i-1].v) / hist[i-1].v * 100 : null;
+    return `<div class="tr" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr">
+      <div style="font-weight:600">${h.dt}</div>
+      <div class="cr">${f0(h.v)}</div>
       <div class="cr" style="color:var(--muted)">${f0(h.i)}</div>
       <div class="cr ${pl>=0?'up':'dn'}" style="font-weight:600">${pl>=0?'+':''}${f2(pl)} <span style="font-size:10px">(${fp(pct)})</span></div>
-      <div class="cr">${prev!==null?`<span class="bge ${prev>=0?'bu2':'bd2'}">${fp(prev)}</span>`:'<span style="color:var(--faint)">—</span>'}</div>
+      <div class="cr">${prev !== null ? `<span class="bge ${prev>=0?'bu2':'bd2'}">${fp(prev)}</span>` : '<span style="color:var(--faint)">—</span>'}</div>
+      <div class="cr"><button class="del-btn" onclick="deleteHist(${i})" title="Supprimer ce point">✕</button></div>
     </div>`;
   }).join('');
 }
 
-function rPerf(){
-  let bA={};
-  pos.forEach(p=>{const c=calc(p);if(!bA[p.t])bA[p.t]={i:0,v:0};bA[p.t].i+=p.inv;bA[p.t].v+=c.val;});
-  const lb=Object.keys(bA);
-  dc('cpf');
-  ch['cpf']=new Chart(document.getElementById('cpf').getContext('2d'),{
-    type:'bar',
-    data:{labels:lb,datasets:[{label:'Investi',data:lb.map(l=>Math.round(cv(bA[l].i))),backgroundColor:'#B5D4F4',borderRadius:4},{label:'Valeur actuelle',data:lb.map(l=>Math.round(cv(bA[l].v))),backgroundColor:lb.map(l=>CA[l]||'#888'),borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:10}}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{callback:v=>f0(v*(cur==='USD'?1:getFx()))}}}}
+function rPerf() {
+  let bA = {};
+  pos.forEach(p => {
+    const c = calc(p);
+    if (!bA[p.t]) bA[p.t] = {i:0, v:0};
+    bA[p.t].i += p.inv;
+    bA[p.t].v += c.val;
   });
-  const plData=pos.map(p=>{const c=calc(p);return{lb:`${p.t} ${p.dt}`,v:cv(c.pl)};});
-  document.getElementById('plw').style.height=Math.max(300,pos.length*38+50)+'px';
+  const lb = Object.keys(bA);
+  dc('cpf');
+  charts['cpf'] = new Chart(document.getElementById('cpf').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: lb,
+      datasets: [
+        {label:'Investi',         data: lb.map(l => Math.round(cv(bA[l].i))), backgroundColor:'#B5D4F4', borderRadius:4},
+        {label:'Valeur actuelle', data: lb.map(l => Math.round(cv(bA[l].v))), backgroundColor: lb.map(l => CA[l]||'#888'), borderRadius:4},
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {legend:{display:true, position:'bottom', labels:{font:{size:11}, boxWidth:10}}},
+      scales: {
+        x: {grid:{display:false}},
+        y: {grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback: v => f0(v*(cur==='USD'?1:getFx()))}},
+      },
+    },
+  });
+  const plData = pos.map(p => { const c = calc(p); return {lb:`${p.t} ${p.dt}`, v:cv(c.pl)}; });
+  document.getElementById('plw').style.height = Math.max(300, pos.length * 38 + 50) + 'px';
   dc('cpl');
-  ch['cpl']=new Chart(document.getElementById('cpl').getContext('2d'),{
-    type:'bar',
-    data:{labels:plData.map(d=>d.lb),datasets:[{data:plData.map(d=>parseFloat(d.v.toFixed(2))),backgroundColor:plData.map(d=>d.v>=0?'#1D9E75':'#E24B4A'),borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{callback:v=>(v>=0?'+':'')+f0(v*(cur==='USD'?1:getFx()))}},y:{grid:{display:false},ticks:{font:{size:10}}}}}
+  charts['cpl'] = new Chart(document.getElementById('cpl').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: plData.map(d => d.lb),
+      datasets: [{
+        data: plData.map(d => parseFloat(d.v.toFixed(2))),
+        backgroundColor: plData.map(d => d.v >= 0 ? '#1D9E75' : '#E24B4A'),
+        borderRadius: 4,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: {legend:{display:false}},
+      scales: {
+        x: {grid:{display:false}, ticks:{callback: v => (v>=0?'+':'')+f0(v*(cur==='USD'?1:getFx()))}},
+        y: {grid:{display:false}, ticks:{font:{size:10}}},
+      },
+    },
   });
 }
 
-function rWatch(){
-  const sigCls={BUY:'sig-buy','STRONG BUY':'sig-sbuy',HOLD:'sig-hold',NOTHING:'sig-noth'};
-  const arrow=v=>v>0?'▲':v<0?'▼':'■';
-  const cls=v=>v>0?'up':v<0?'dn':'';
-  document.getElementById('wlist').innerHTML=WATCH.map(w=>`
+function rWatch() {
+  const sigCls = {BUY:'sig-buy','STRONG BUY':'sig-sbuy',HOLD:'sig-hold',NOTHING:'sig-noth'};
+  const arrow  = v => v > 0 ? '▲' : v < 0 ? '▼' : '■';
+  const cls    = v => v > 0 ? 'up' : v < 0 ? 'dn' : '';
+  document.getElementById('wlist').innerHTML = WATCH.map(w => `
     <div class="wcard">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
         <div style="flex:1;min-width:180px">
@@ -580,75 +728,56 @@ function rWatch(){
     </div>`).join('');
 }
 
-function rAll(){
+function rAll() {
   rKPI(); rPos();
-  const va=document.getElementById('valloc'),vp=document.getElementById('vprog');
-  const vf=document.getElementById('vperf'),vw=document.getElementById('vwatch');
-  if(va.style.display!=='none')rAlloc();
-  if(vp.style.display!=='none')rProg();
-  if(vf.style.display!=='none')rPerf();
-  if(vw&&vw.style.display!=='none')rWatch();
+  if (document.getElementById('valloc').style.display !== 'none') rAlloc();
+  if (document.getElementById('vprog').style.display  !== 'none') rProg();
+  if (document.getElementById('vperf').style.display  !== 'none') rPerf();
+  if (document.getElementById('vwatch').style.display !== 'none') rWatch();
 }
 
-function sv(v){
-  const m={pos:'vpos',alloc:'valloc',prog:'vprog',perf:'vperf',watch:'vwatch'};
-  Object.values(m).forEach(id=>document.getElementById(id).style.display='none');
-  document.getElementById(m[v]).style.display='';
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',['pos','alloc','prog','perf','watch'][i]===v));
-  if(v==='alloc')rAlloc();if(v==='prog')rProg();if(v==='perf')rPerf();if(v==='watch')rWatch();
+// ══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════
+const TABS  = ['pos','alloc','prog','perf','watch'];
+const VIEWS = {pos:'vpos', alloc:'valloc', prog:'vprog', perf:'vperf', watch:'vwatch'};
+
+function sv(v) {
+  Object.values(VIEWS).forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById(VIEWS[v]).style.display = '';
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('on', TABS[i] === v));
+  if (v === 'alloc') rAlloc();
+  if (v === 'prog')  rProg();
+  if (v === 'perf')  rPerf();
+  if (v === 'watch') rWatch();
 }
 
-function setCur(c){cur=c;document.getElementById('beur').classList.toggle('on',c==='EUR');document.getElementById('busd').classList.toggle('on',c==='USD');rAll();}
-function addH(){
-  const dt=prompt('Date JJ/MM/AAAA');if(!dt)return;
-  const v=parseFloat(prompt('Valeur totale ($)'))||0,i=parseFloat(prompt('Capital investi ($)'))||0;
-  hist.push({dt,v,i});rProg();
+function setCur(c) {
+  cur = c;
+  document.getElementById('beur').classList.toggle('on', c === 'EUR');
+  document.getElementById('busd').classList.toggle('on', c === 'USD');
+  rAll();
 }
 
-// ── Auto-refresh ────────────────────────────────────────────────────
-const RF_INTERVAL = 300; // secondes (5 min)
-let rfTimer = null, rfRemaining = RF_INTERVAL, rfActive = true;
-
-function startAutoRefresh(){
-  rfRemaining = RF_INTERVAL;
-  clearInterval(rfTimer);
-  rfTimer = setInterval(()=>{
-    if(!rfActive) return;
-    rfRemaining--;
-    const pct = (rfRemaining / RF_INTERVAL) * 100;
-    document.getElementById('rf-fill').style.width = pct + '%';
-    const m = Math.floor(rfRemaining/60), s = rfRemaining%60;
-    document.getElementById('rf-countdown').textContent = m+':'+(s<10?'0':'')+s;
-    if(rfRemaining <= 0){ loadCSV(); rfRemaining = RF_INTERVAL; }
-  }, 1000);
+// ══════════════════════════════════════════════════════════════
+// DERNIÈRE MISE À JOUR
+// ══════════════════════════════════════════════════════════════
+function setLastUpdate(msg) {
+  document.getElementById('lastupdate-txt').textContent = msg;
 }
 
-function toggleAutoRefresh(){
-  rfActive = !rfActive;
-  const btn = document.getElementById('rf-toggle');
-  const lbl = document.getElementById('rf-label');
-  btn.textContent = rfActive ? '⏸ Pause' : '▶ Reprendre';
-  lbl.textContent = rfActive ? '🔄 Actualisation auto :' : '⏸ Auto-refresh pausé';
-  document.getElementById('rf-fill').style.background = rfActive ? 'var(--acc)' : 'var(--faint)';
-}
-
-// ── Toast ────────────────────────────────────────────────────────────
-function showToast(msg, duration=3000){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), duration);
-}
-
-// ── Modal ajout position ─────────────────────────────────────────────
-function openModal(){
+// ══════════════════════════════════════════════════════════════
+// MODAL — ajout position (FIX B3 : sauvegarde en localStorage)
+// ══════════════════════════════════════════════════════════════
+function openModal() {
   document.getElementById('overlay').classList.add('open');
   document.getElementById('f-ticker').focus();
-  document.getElementById('f-error').style.display='none';
+  document.getElementById('f-error').style.display = 'none';
 }
-function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
-function closeModalOutside(e){ if(e.target.id==='overlay') closeModal(); }
+function closeModal()          { document.getElementById('overlay').classList.remove('open'); }
+function closeModalOutside(e)  { if (e.target.id === 'overlay') closeModal(); }
 
-function submitPos(){
+function submitPos() {
   const ticker = document.getElementById('f-ticker').value.trim();
   const nom    = document.getElementById('f-nom').value.trim();
   const type   = document.getElementById('f-type').value;
@@ -658,32 +787,104 @@ function submitPos(){
   const pa     = parseFloat(document.getElementById('f-pa').value);
   const pxRaw  = document.getElementById('f-px').value;
   const px     = pxRaw ? parseFloat(pxRaw) : pa;
+  const err    = document.getElementById('f-error');
 
-  const err = document.getElementById('f-error');
-  if(!ticker||!nom||!dt||isNaN(inv)||inv<=0||isNaN(pa)||pa<=0){
-    err.textContent='⚠️ Merci de remplir tous les champs obligatoires (*) avec des valeurs valides.';
-    err.style.display='block'; return;
+  if (!ticker || !nom || !dt || isNaN(inv) || inv <= 0 || isNaN(pa) || pa <= 0) {
+    err.textContent = '⚠️ Merci de remplir tous les champs obligatoires (*) avec des valeurs valides.';
+    err.style.display = 'block';
+    return;
   }
-  // Validation format date JJ/MM/AAAA
-  if(!/^\d{2}\/\d{2}\/\d{4}$/.test(dt)){
-    err.textContent='⚠️ Date au format JJ/MM/AAAA (ex: 15/06/2026)';
-    err.style.display='block'; return;
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dt)) {
+    err.textContent = '⚠️ Date au format JJ/MM/AAAA (ex: 15/06/2026)';
+    err.style.display = 'block';
+    return;
   }
 
-  pos.push({id:Math.random(), type, nom, t:ticker, pl:plat, dt, inv, pa, px});
+  const newPos = {id: crypto.randomUUID(), src:'local', type, nom, t:ticker, pl:plat, dt, inv, pa, px};
+  localPos.push(newPos);
+  saveLocalPos();
+  rebuildPos();
   closeModal();
-  // Reset form
-  ['f-ticker','f-nom','f-date','f-inv','f-pa','f-px'].forEach(id=>document.getElementById(id).value='');
-  err.style.display='none';
+  ['f-ticker','f-nom','f-date','f-inv','f-pa','f-px'].forEach(id => document.getElementById(id).value = '');
+  err.style.display = 'none';
   rAll();
-  showToast('✅ Position '+ticker+' ajoutée avec succès !');
+  showToast('✅ Position ' + ticker + ' ajoutée et sauvegardée localement.');
 }
 
-// Fermer modal avec Escape
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+function deleteLocalPos(id) {
+  localPos = localPos.filter(p => p.id !== id);
+  saveLocalPos();
+  rebuildPos();
+  rAll();
+  showToast('Position supprimée.');
+}
 
-window.addEventListener('DOMContentLoaded',()=>{ loadCSV(); startAutoRefresh(); });
+// ══════════════════════════════════════════════════════════════
+// FIX B5 : FORMULAIRE HISTORIQUE (remplace prompt())
+// ══════════════════════════════════════════════════════════════
+function toggleHistForm() {
+  const form   = document.getElementById('hform');
+  const isOpen = form.classList.toggle('open');
+  if (isOpen) document.getElementById('h-dt').focus();
+  document.getElementById('h-error').style.display = 'none';
+}
+
+function submitHist() {
+  const dt  = document.getElementById('h-dt').value.trim();
+  const v   = parseFloat(document.getElementById('h-v').value);
+  const i   = parseFloat(document.getElementById('h-i').value);
+  const err = document.getElementById('h-error');
+
+  if (!dt || isNaN(v) || v <= 0 || isNaN(i) || i <= 0) {
+    err.textContent = '⚠️ Tous les champs sont obligatoires.';
+    err.style.display = 'block';
+    return;
+  }
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dt)) {
+    err.textContent = '⚠️ Date au format JJ/MM/AAAA (ex: 01/07/2026)';
+    err.style.display = 'block';
+    return;
+  }
+
+  hist.push({dt, v, i});
+  // Trier par date chronologique
+  hist.sort((a, b) => {
+    const p = d => d.split('/').reverse().join('');
+    return p(a.dt).localeCompare(p(b.dt));
+  });
+  saveHist();
+  ['h-dt','h-v','h-i'].forEach(id => document.getElementById(id).value = '');
+  toggleHistForm();
+  rProg();
+  showToast('✅ Point mensuel ajouté.');
+}
+
+function deleteHist(index) {
+  hist.splice(index, 1);
+  saveHist();
+  rProg();
+  showToast('Point supprimé.');
+}
+
+// ══════════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════════
+function showToast(msg, duration = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+window.addEventListener('DOMContentLoaded', () => {
+  rAll();      // affiche les données fallback immédiatement
+  loadCSV();   // charge le CSV Google Sheets
+});
 </script>
-
-
-</body></html>
+</body>
+</html>
