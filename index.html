@@ -130,6 +130,18 @@ h1{font-size:20px;font-weight:600;}
 .podium-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:.5px solid var(--bdr);font-size:12px;}
 .podium-item:last-child{border-bottom:none;}
 .podium-sep{font-size:10px;font-weight:600;letter-spacing:.04em;padding:6px 0 3px;}
+/* Toggle vue groupée / détaillée */
+.vtbtn{font-size:11px;padding:4px 12px;border:none;border-radius:6px;cursor:pointer;background:var(--el);color:var(--muted);font-weight:500;}
+.vtbtn.on{background:var(--acc);color:#fff;}
+/* Ligne de groupe (header actif agrégé) */
+.tr-group{display:grid;grid-template-columns:2.2fr .85fr 1fr .85fr .7fr .4fr;gap:6px;padding:11px 13px;align-items:center;font-size:12px;border-bottom:.5px solid var(--bdr);cursor:pointer;font-weight:600;}
+.tr-group:hover{background:var(--accl);}
+/* Enfants déroulés */
+.group-children{display:none;}
+.group-children.open{display:block;}
+.tr-child{display:grid;grid-template-columns:2.2fr .85fr 1fr .85fr .7fr .4fr;gap:6px;padding:8px 13px 8px 28px;align-items:center;font-size:12px;border-bottom:.5px solid var(--bdr);cursor:pointer;background:var(--el);}
+.tr-child:last-child{border-bottom:none;}
+.tr-child:hover{filter:brightness(.97);}
 /* Ligne de position cliquable */
 .tr{cursor:pointer;}
 /* Détail position (expand on click) */
@@ -239,6 +251,11 @@ h1{font-size:20px;font-weight:600;}
 <div id="vpos">
   <!-- Synthèse visuelle — 3 mini graphiques -->
   <div id="synth"></div>
+  <!-- Toggle vue -->
+  <div style="display:flex;justify-content:flex-end;gap:6px;margin-bottom:8px;">
+    <button class="vtbtn on" id="vt-grouped" onclick="setViewMode('grouped')">⊞ Groupé</button>
+    <button class="vtbtn" id="vt-flat" onclick="setViewMode('flat')">≡ Toutes les lignes</button>
+  </div>
   <div class="card">
     <div class="th">
       <div>Actif</div>
@@ -402,16 +419,17 @@ function saveHist() {
 // ══════════════════════════════════════════════════════════════
 // ÉTAT
 // ══════════════════════════════════════════════════════════════
-let csvPos   = FALLBACK_POS.map(p => ({...p, id: crypto.randomUUID(), src: 'fallback'}));
-let localPos = loadLocalPos();
-let pos      = [...csvPos, ...localPos];
-let hist     = loadHist() || [
+let csvPos      = FALLBACK_POS.map(p => ({...p, id: crypto.randomUUID(), src: 'fallback'}));
+let localPos    = loadLocalPos();
+let pos         = [...csvPos, ...localPos];
+let hist        = loadHist() || [
   {dt:'30/04/2026', v:4400.43, i:4357.82},
   {dt:'02/06/2026', v:4624.09, i:4590.50},
 ];
-let cur      = 'EUR';
-let charts   = {};
-let csvLoaded = false;
+let cur         = 'EUR';
+let charts      = {};
+let csvLoaded   = false;
+let groupedView = true; // vue groupée par actif par défaut
 
 function rebuildPos() {
   pos = [...csvPos, ...localPos];
@@ -569,7 +587,112 @@ function rKPI() {
     ' · ' + new Date().toLocaleDateString('fr-FR');
 }
 
-function rPos() {
+// ── Helper : génère le panneau détail d'une position ───────────
+function detailPanel(p) {
+  const c = calc(p);
+  const pxColor = p.px >= p.pa ? 'var(--grn)' : 'var(--red)';
+  return `
+  <div class="pos-detail" id="detail-${p.id}">
+    <div class="pos-detail-inner">
+      <div class="pos-stats">
+        <div class="pos-stat-row"><span class="pos-stat-lbl">Prix d'achat</span><span style="font-weight:600">${f2(p.pa)}</span></div>
+        <div class="pos-stat-row"><span class="pos-stat-lbl">Prix actuel</span><span style="font-weight:600;color:${pxColor}">${f2(p.px)}</span></div>
+        <div class="pos-stat-row"><span class="pos-stat-lbl">Variation prix</span><span style="font-weight:600;color:${pxColor}">${fp((p.px-p.pa)/p.pa*100)}</span></div>
+        <div class="pos-stat-row"><span class="pos-stat-lbl">Unités détenues</span><span>${p.type==='Crypto'?c.n.toFixed(6):c.n.toFixed(4)}</span></div>
+        <div class="pos-stat-row"><span class="pos-stat-lbl">Montant investi</span><span>${f2(p.inv)}</span></div>
+        <div class="pos-stat-row"><span class="pos-stat-lbl">Valeur actuelle</span><span style="font-weight:600">${f2(c.val)}</span></div>
+        <div class="pos-stat-row"><span class="pos-stat-lbl">Plus-value</span><span style="font-weight:600;color:${c.pl>=0?'var(--grn)':'var(--red)'}">${c.pl>=0?'+':''}${f2(c.pl)} (${fp(c.pct)})</span></div>
+        <div class="pos-stat-row"><span class="pos-stat-lbl">Plateforme</span><span>${p.pl}</span></div>
+        <div class="pos-stat-row"><span class="pos-stat-lbl">Durée détention</span><span>${getDuration(p.dt)}</span></div>
+      </div>
+      <div class="pos-chart-box"><canvas id="pchart-${p.id}"></canvas></div>
+    </div>
+  </div>`;
+}
+
+// ── Vue GROUPÉE par actif ───────────────────────────────────────
+function rPosGrouped() {
+  const groups = {}, order = [];
+  pos.forEach(p => {
+    if (!groups[p.t]) { groups[p.t] = {type:p.type, nom:p.nom, positions:[],  ti:0, tv:0}; order.push(p.t); }
+    const c = calc(p);
+    groups[p.t].positions.push(p);
+    groups[p.t].ti += p.inv;
+    groups[p.t].tv += c.val;
+  });
+
+  document.getElementById('plist').innerHTML = order.map(ticker => {
+    const g    = groups[ticker];
+    const tpl  = g.tv - g.ti, tpct = tpl / g.ti * 100;
+    const bc   = tpct > 0 ? 'bu2' : tpct < 0 ? 'bd2' : 'bn2';
+    const plats = [...new Set(g.positions.map(p => p.pl === 'Trade Republic' ? 'TR' : 'REV'))].join(' · ');
+
+    const children = g.positions.map(p => {
+      const c = calc(p);
+      const childBc  = c.pct > 0 ? 'bu2' : c.pct < 0 ? 'bd2' : 'bn2';
+      const pxColor  = p.px >= p.pa ? 'var(--grn)' : 'var(--red)';
+      const platBadge = p.src === 'local'
+        ? `<span class="pt-local">LOCAL</span>`
+        : `<span class="pt">${p.pl === 'Trade Republic' ? 'TR' : 'REV'}</span>`;
+      const delBtn = p.src === 'local'
+        ? `<button class="del-btn" onclick="event.stopPropagation();deleteLocalPos('${p.id}')" title="Supprimer">✕</button>`
+        : `<div></div>`;
+      return `
+      <div class="tr-child" onclick="togglePosDetail('${p.id}')">
+        <div>
+          <span style="font-weight:500">${p.dt}</span> ${platBadge}
+          <div class="sdesc">Achat ${f2(p.pa)}/u → <span style="color:${pxColor};font-weight:500">${f2(p.px)}/u</span> · ${getDuration(p.dt)}</div>
+        </div>
+        <div class="cr" style="color:var(--muted)">${f2(p.inv)}</div>
+        <div class="cr" style="font-weight:500">${f2(c.val)}</div>
+        <div class="cr ${c.pl>=0?'up':'dn'}" style="font-weight:600">${c.pl>=0?'+':''}${f2(c.pl)}</div>
+        <div class="cr"><span class="bge ${childBc}">${fp(c.pct)}</span></div>
+        ${delBtn}
+      </div>
+      ${detailPanel(p)}`;
+    }).join('');
+
+    return `
+    <div class="tr-group" onclick="toggleGroup('${ticker}')">
+      <div>
+        <span style="font-size:14px">${ticker}</span>
+        <span class="tag ${TC[g.type]||'te'}">${g.type}</span>
+        <span class="pt">${g.positions.length} position${g.positions.length>1?'s':''}</span>
+        <div class="sdesc">${g.nom} · ${plats}</div>
+      </div>
+      <div class="cr" style="color:var(--muted)">${f2(g.ti)}</div>
+      <div class="cr" style="font-weight:500">${f2(g.tv)}</div>
+      <div class="cr ${tpl>=0?'up':'dn'}" style="font-weight:600">${tpl>=0?'+':''}${f2(tpl)}</div>
+      <div class="cr"><span class="bge ${bc}">${fp(tpct)}</span></div>
+      <div style="text-align:right;font-size:11px;color:var(--faint)" id="arrow-${ticker}">▶</div>
+    </div>
+    <div class="group-children" id="group-${ticker}">${children}</div>`;
+  }).join('');
+}
+
+function toggleGroup(ticker) {
+  const group = document.getElementById('group-' + ticker);
+  const arrow = document.getElementById('arrow-' + ticker);
+  if (!group) return;
+  const isOpen = group.classList.toggle('open');
+  if (arrow) arrow.textContent = isOpen ? '▼' : '▶';
+  if (!isOpen) {
+    group.querySelectorAll('.pos-detail.open').forEach(el => {
+      el.classList.remove('open');
+      dc('pchart-' + el.id.replace('detail-', ''));
+    });
+  }
+}
+
+function setViewMode(mode) {
+  groupedView = (mode === 'grouped');
+  document.getElementById('vt-grouped').classList.toggle('on', groupedView);
+  document.getElementById('vt-flat').classList.toggle('on', !groupedView);
+  rPos();
+}
+
+// ── Vue PLATE (toutes les lignes) ───────────────────────────────
+function rPosFlat() {
   document.getElementById('plist').innerHTML = pos.map(p => {
     const c  = calc(p);
     const bc = c.pct > 0 ? 'bu2' : c.pct < 0 ? 'bd2' : 'bn2';
@@ -597,23 +720,13 @@ function rPos() {
       <div class="cr"><span class="bge ${bc}">${fp(c.pct)}</span></div>
       ${delBtn}
     </div>
-    <div class="pos-detail" id="detail-${p.id}">
-      <div class="pos-detail-inner">
-        <div class="pos-stats">
-          <div class="pos-stat-row"><span class="pos-stat-lbl">Prix d'achat</span><span style="font-weight:600">${f2(p.pa)}</span></div>
-          <div class="pos-stat-row"><span class="pos-stat-lbl">Prix actuel</span><span style="font-weight:600;color:${pxColor}">${f2(p.px)}</span></div>
-          <div class="pos-stat-row"><span class="pos-stat-lbl">Variation prix</span><span style="font-weight:600;color:${pxColor}">${fp((p.px-p.pa)/p.pa*100)}</span></div>
-          <div class="pos-stat-row"><span class="pos-stat-lbl">Unités détenues</span><span>${nbUnits}</span></div>
-          <div class="pos-stat-row"><span class="pos-stat-lbl">Montant investi</span><span>${f2(p.inv)}</span></div>
-          <div class="pos-stat-row"><span class="pos-stat-lbl">Valeur actuelle</span><span style="font-weight:600">${f2(c.val)}</span></div>
-          <div class="pos-stat-row"><span class="pos-stat-lbl">Plus-value</span><span style="font-weight:600;color:${c.pl>=0?'var(--grn)':'var(--red)'}">${c.pl>=0?'+':''}${f2(c.pl)} (${fp(c.pct)})</span></div>
-          <div class="pos-stat-row"><span class="pos-stat-lbl">Plateforme</span><span>${p.pl}</span></div>
-          <div class="pos-stat-row"><span class="pos-stat-lbl">Durée détention</span><span>${duration}</span></div>
-        </div>
-        <div class="pos-chart-box"><canvas id="pchart-${p.id}"></canvas></div>
-      </div>
-    </div>`;
+    ${detailPanel(p)}`;
   }).join('');
+}
+
+function rPos() {
+  if (groupedView) rPosGrouped();
+  else rPosFlat();
 }
 
 function dc(k) {
