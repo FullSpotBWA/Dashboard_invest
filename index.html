@@ -6,6 +6,8 @@
 <title>Mon Portefeuille</title>
 <!-- FIX B1 : Chart.js via CDN (remplace le fichier local cassé) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#f5f7fa;--card:#fff;--el:#eef1f6;--text:#111;--muted:#666;--faint:#aaa;
@@ -17,18 +19,43 @@
   --blu:#0C447C;--blub:#e3f2fd;
   --tel:#0F6E56;--telb:#e1f5ee;
 }
-@media(prefers-color-scheme:dark){:root{
+/* Dark mode — auto (préférence système) sauf si l'utilisateur a forcé le mode clair */
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1a1a1a;--card:#252525;--el:#2e2e2e;--text:#f0f0f0;--muted:#aaa;--faint:#666;
+    --bdr:rgba(255,255,255,.08);--bdrs:rgba(255,255,255,.18);
+    --acc:#4d7bb5;--accl:#1a2a45;
+    --grn:#4ecb71;--grnb:#1b3a24;
+    --red:#ff6b6b;--redb:#3a1818;
+    --blub:#0d2a45;--telb:#0d3028;
+  }
+}
+/* Dark mode — toggle manuel */
+:root[data-theme="dark"]{
   --bg:#1a1a1a;--card:#252525;--el:#2e2e2e;--text:#f0f0f0;--muted:#aaa;--faint:#666;
   --bdr:rgba(255,255,255,.08);--bdrs:rgba(255,255,255,.18);
   --acc:#4d7bb5;--accl:#1a2a45;
   --grn:#4ecb71;--grnb:#1b3a24;
   --red:#ff6b6b;--redb:#3a1818;
   --blub:#0d2a45;--telb:#0d3028;
-}}
+}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:20px;font-size:14px;}
 .wrap{max-width:1160px;margin:0 auto;}
 .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+/* ── En-tête ──────────────────────────────────────────────────── */
+.site-header{text-align:center;margin-bottom:22px;padding-top:8px;}
+.header-bar{display:flex;justify-content:flex-end;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.site-title{
+  font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:32px;font-weight:800;letter-spacing:-.5px;line-height:1.2;
+  background:linear-gradient(135deg,var(--acc) 0%,#5f9ecf 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.site-subtitle{font-size:12px;color:var(--muted);margin-top:5px;}
+/* Bouton dark mode */
+.theme-btn{background:var(--el);border:.5px solid var(--bdr);border-radius:8px;padding:6px 11px;cursor:pointer;font-size:16px;line-height:1;transition:background .15s;}
+.theme-btn:hover{background:var(--accl);}
 h1{font-size:20px;font-weight:600;}
 .sub{font-size:12px;color:var(--muted);margin-top:3px;}
 .tgl{display:inline-flex;background:var(--el);border-radius:8px;padding:3px;border:.5px solid var(--bdr);}
@@ -172,20 +199,19 @@ h1{font-size:20px;font-weight:600;}
 <body>
 <div class="wrap">
 
-<div class="top">
-  <div>
-    <h1>Mon portefeuille</h1>
-    <div class="sub" id="sub-date"></div>
-  </div>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+<header class="site-header">
+  <div class="header-bar">
     <button class="rfbtn" onclick="openModal()">+ Position</button>
     <button class="rfbtn" style="background:var(--el);color:var(--text);" onclick="loadCSV()">⟳ Actualiser</button>
     <div class="tgl">
       <button class="tbtn on" id="beur" onclick="setCur('EUR')">€ EUR</button>
       <button class="tbtn" id="busd" onclick="setCur('USD')">$ USD</button>
     </div>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Basculer dark / light">🌙</button>
   </div>
-</div>
+  <h1 class="site-title">Mon Dashboard Investissement</h1>
+  <div class="site-subtitle" id="sub-date"></div>
+</header>
 
 <div class="fxbar">
   <span>💱 1 EUR = <input type="number" id="fx" value="1.1627" step="0.0001" oninput="rAll()"> USD</span>
@@ -1202,13 +1228,40 @@ function showToast(msg, duration = 3000) {
 }
 
 // ══════════════════════════════════════════════════════════════
+// DARK MODE
+// ══════════════════════════════════════════════════════════════
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('dashboard_theme', theme);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('dashboard_theme');
+  if (saved) {
+    applyTheme(saved);
+  } else {
+    // Suit la préférence système si aucun choix sauvegardé
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(prefersDark ? 'dark' : 'light');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════════
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 window.addEventListener('DOMContentLoaded', () => {
-  rAll();      // affiche les données fallback immédiatement
-  loadCSV();   // charge le CSV Google Sheets
+  initTheme();   // applique le thème avant le premier rendu
+  rAll();        // affiche les données fallback immédiatement
+  loadCSV();     // charge le CSV Google Sheets
 });
 </script>
 </body>
