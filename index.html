@@ -116,11 +116,38 @@ h1{font-size:20px;font-weight:600;}
 .hform{background:var(--el);border:.5px solid var(--bdr);border-radius:10px;padding:14px;margin-top:10px;display:none;}
 .hform.open{display:block;}
 .hform-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;}
+/* KPI améliorés */
+.kpi{transition:box-shadow .15s;}
+.kpi:hover{box-shadow:0 2px 8px var(--bdr);}
+.kpi-accent-grn{border-left:3px solid var(--grn);}
+.kpi-accent-red{border-left:3px solid var(--red);}
+.kpi-accent-neu{border-left:3px solid var(--acc);}
+/* Section synthèse */
+.synth{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px;}
+.synth-card{background:var(--card);border:.5px solid var(--bdr);border-radius:12px;padding:14px;}
+.synth-title{font-size:10px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.synth-chart{position:relative;height:140px;}
+.podium-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:.5px solid var(--bdr);font-size:12px;}
+.podium-item:last-child{border-bottom:none;}
+.podium-sep{font-size:10px;font-weight:600;letter-spacing:.04em;padding:6px 0 3px;}
+/* Ligne de position cliquable */
+.tr{cursor:pointer;}
+/* Détail position (expand on click) */
+.pos-detail{display:none;border-bottom:.5px solid var(--bdr);padding:14px 16px;background:var(--accl);}
+.pos-detail.open{display:block;}
+.pos-detail-inner{display:grid;grid-template-columns:1fr 180px;gap:16px;align-items:start;}
+.pos-stats{display:flex;flex-direction:column;gap:0;}
+.pos-stat-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:6px 0;border-bottom:.5px solid var(--bdr);}
+.pos-stat-row:last-child{border-bottom:none;}
+.pos-stat-lbl{color:var(--muted);}
+.pos-chart-box{position:relative;height:150px;}
 /* Toast */
 .toast{position:fixed;bottom:22px;right:22px;background:#1D3557;color:#fff;border-radius:9px;padding:11px 18px;font-size:13px;font-weight:500;z-index:300;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
 .toast.show{opacity:1;transform:translateY(0);}
 @media(max-width:650px){
   .cg{grid-template-columns:1fr;}
+  .synth{grid-template-columns:1fr;}
+  .pos-detail-inner{grid-template-columns:1fr;}
   .th,.tr{grid-template-columns:2fr 1fr 1fr;}
   /* Cache Investi, +/- absolu, et colonne supprimer sur mobile */
   .th>*:nth-child(2),.tr>*:nth-child(2),
@@ -210,6 +237,8 @@ h1{font-size:20px;font-weight:600;}
 <div class="kpis" id="kpis"></div>
 
 <div id="vpos">
+  <!-- Synthèse visuelle — 3 mini graphiques -->
+  <div id="synth"></div>
   <div class="card">
     <div class="th">
       <div>Actif</div>
@@ -506,12 +535,34 @@ function rKPI() {
     if (c.pct < calc(worst).pct) worst = p;
   });
   const tpl = tv - ti, tpct = tpl / ti * 100;
+  const plClass  = tpl >= 0 ? 'kpi-accent-grn' : 'kpi-accent-red';
+  const bstPct   = calc(best).pct, wstPct = calc(worst).pct;
   document.getElementById('kpis').innerHTML = `
-    <div class="kpi"><div class="kl">Valeur totale</div><div class="kv">${f0(tv)}</div><div class="ks">${pos.length} positions</div></div>
-    <div class="kpi"><div class="kl">Capital investi</div><div class="kv">${f0(ti)}</div></div>
-    <div class="kpi"><div class="kl">Plus-value</div><div class="kv ${tpl>=0?'up':'dn'}">${f2(tpl)}</div><div class="ks">${fp(tpct)}</div></div>
-    <div class="kpi"><div class="kl">Meilleure</div><div class="kv" style="font-size:15px">${best.t} <span class="${calc(best).pct>=0?'up':'dn'}" style="font-size:13px">${fp(calc(best).pct)}</span></div></div>
-    <div class="kpi"><div class="kl">À surveiller</div><div class="kv" style="font-size:15px">${worst.t} <span class="${calc(worst).pct>=0?'up':'dn'}" style="font-size:13px">${fp(calc(worst).pct)}</span></div></div>`;
+    <div class="kpi kpi-accent-neu">
+      <div class="kl">Valeur totale</div>
+      <div class="kv">${f0(tv)}</div>
+      <div class="ks">${pos.length} positions · ${csvLoaded?'live':'démo'}</div>
+    </div>
+    <div class="kpi kpi-accent-neu">
+      <div class="kl">Capital investi</div>
+      <div class="kv">${f0(ti)}</div>
+      <div class="ks">&nbsp;</div>
+    </div>
+    <div class="kpi ${plClass}">
+      <div class="kl">Plus-value nette</div>
+      <div class="kv ${tpl>=0?'up':'dn'}">${f2(tpl)}</div>
+      <div class="ks" style="font-weight:600">${fp(tpct)}</div>
+    </div>
+    <div class="kpi kpi-accent-grn">
+      <div class="kl">🏆 Meilleure position</div>
+      <div class="kv" style="font-size:16px">${best.t} <span class="up" style="font-size:13px">${fp(bstPct)}</span></div>
+      <div class="ks">${best.nom}</div>
+    </div>
+    <div class="kpi kpi-accent-red">
+      <div class="kl">⚠️ À surveiller</div>
+      <div class="kv" style="font-size:16px">${worst.t} <span class="dn" style="font-size:13px">${fp(wstPct)}</span></div>
+      <div class="ks">${worst.nom}</div>
+    </div>`;
   document.getElementById('sub-date').textContent =
     pos.length + ' positions · ' +
     (csvLoaded ? 'Google Sheets' : 'Données locales') +
@@ -522,31 +573,192 @@ function rPos() {
   document.getElementById('plist').innerHTML = pos.map(p => {
     const c  = calc(p);
     const bc = c.pct > 0 ? 'bu2' : c.pct < 0 ? 'bd2' : 'bn2';
-    // Les positions locales ont un badge distinct et un bouton supprimer
     const platBadge = p.src === 'local'
       ? `<span class="pt-local">LOCAL</span>`
       : `<span class="pt">${p.pl === 'Trade Republic' ? 'TR' : 'REV'}</span>`;
     const delBtn = p.src === 'local'
-      ? `<button class="del-btn" onclick="deleteLocalPos('${p.id}')" title="Supprimer cette position">✕</button>`
+      ? `<button class="del-btn" onclick="event.stopPropagation();deleteLocalPos('${p.id}')" title="Supprimer">✕</button>`
       : `<div></div>`;
-    return `<div class="tr">
+    const nbUnits  = p.type === 'Crypto' ? c.n.toFixed(6) : c.n.toFixed(4);
+    const duration = getDuration(p.dt);
+    const pxColor  = p.px >= p.pa ? 'var(--grn)' : 'var(--red)';
+    return `
+    <div class="tr" onclick="togglePosDetail('${p.id}')">
       <div>
         <span style="font-weight:600">${p.t}</span>
         <span class="tag ${TC[p.type]||'te'}">${p.type}</span>
         ${platBadge}
-        <div class="sdesc">${p.nom} · ${p.dt}</div>
+        <div class="sdesc">${p.nom} · ${p.dt} · ${duration}</div>
+        <div class="sdesc">Achat ${f2(p.pa)}/u → <span style="color:${pxColor};font-weight:500">${f2(p.px)}/u</span></div>
       </div>
       <div class="cr" style="color:var(--muted)">${f2(p.inv)}</div>
       <div class="cr" style="font-weight:500">${f2(c.val)}</div>
       <div class="cr ${c.pl>=0?'up':'dn'}" style="font-weight:600">${c.pl>=0?'+':''}${f2(c.pl)}</div>
       <div class="cr"><span class="bge ${bc}">${fp(c.pct)}</span></div>
       ${delBtn}
+    </div>
+    <div class="pos-detail" id="detail-${p.id}">
+      <div class="pos-detail-inner">
+        <div class="pos-stats">
+          <div class="pos-stat-row"><span class="pos-stat-lbl">Prix d'achat</span><span style="font-weight:600">${f2(p.pa)}</span></div>
+          <div class="pos-stat-row"><span class="pos-stat-lbl">Prix actuel</span><span style="font-weight:600;color:${pxColor}">${f2(p.px)}</span></div>
+          <div class="pos-stat-row"><span class="pos-stat-lbl">Variation prix</span><span style="font-weight:600;color:${pxColor}">${fp((p.px-p.pa)/p.pa*100)}</span></div>
+          <div class="pos-stat-row"><span class="pos-stat-lbl">Unités détenues</span><span>${nbUnits}</span></div>
+          <div class="pos-stat-row"><span class="pos-stat-lbl">Montant investi</span><span>${f2(p.inv)}</span></div>
+          <div class="pos-stat-row"><span class="pos-stat-lbl">Valeur actuelle</span><span style="font-weight:600">${f2(c.val)}</span></div>
+          <div class="pos-stat-row"><span class="pos-stat-lbl">Plus-value</span><span style="font-weight:600;color:${c.pl>=0?'var(--grn)':'var(--red)'}">${c.pl>=0?'+':''}${f2(c.pl)} (${fp(c.pct)})</span></div>
+          <div class="pos-stat-row"><span class="pos-stat-lbl">Plateforme</span><span>${p.pl}</span></div>
+          <div class="pos-stat-row"><span class="pos-stat-lbl">Durée détention</span><span>${duration}</span></div>
+        </div>
+        <div class="pos-chart-box"><canvas id="pchart-${p.id}"></canvas></div>
+      </div>
     </div>`;
   }).join('');
 }
 
 function dc(k) {
   if (charts[k]) { charts[k].destroy(); delete charts[k]; }
+}
+
+// ── Durée de détention depuis une date JJ/MM/AAAA ──────────────
+function getDuration(dtStr) {
+  const [d, m, y] = dtStr.split('/').map(Number);
+  const days = Math.floor((Date.now() - new Date(y, m-1, d)) / 86400000);
+  if (isNaN(days) || days < 0) return '—';
+  if (days < 30)  return days + 'j';
+  if (days < 365) return Math.floor(days/30) + 'mois';
+  const yr = Math.floor(days/365), mo = Math.floor((days%365)/30);
+  return yr + 'a' + (mo > 0 ? mo + 'm' : '');
+}
+
+// ── Synthèse visuelle (section au-dessus du tableau positions) ──
+function rSynth() {
+  if (!pos.length) return;
+  let byCat = {}, byTicker = {};
+  pos.forEach(p => {
+    const c = calc(p);
+    if (!byCat[p.type])  byCat[p.type]  = {inv:0, val:0};
+    byCat[p.type].inv  += p.inv;
+    byCat[p.type].val  += c.val;
+    if (!byTicker[p.t]) byTicker[p.t] = {inv:0, val:0, nom:p.nom};
+    byTicker[p.t].inv  += p.inv;
+    byTicker[p.t].val  += c.val;
+  });
+  const ranked = Object.entries(byTicker)
+    .map(([t, d]) => ({t, nom:d.nom, pct:(d.val-d.inv)/d.inv*100}))
+    .sort((a,b) => b.pct - a.pct);
+  const top = ranked.slice(0, 3);
+  const bot = [...ranked].reverse().slice(0, 3);
+  const podiumRow = (d, cls) =>
+    `<div class="podium-item"><span style="font-weight:600">${d.t}</span><span style="font-size:10px;color:var(--muted);margin:0 auto 0 6px">${d.nom}</span><span class="bge ${cls}">${fp(d.pct)}</span></div>`;
+
+  document.getElementById('synth').innerHTML = `
+    <div class="synth">
+      <div class="synth-card">
+        <div class="synth-title">Répartition du portefeuille</div>
+        <div class="synth-chart"><canvas id="sc-alloc"></canvas></div>
+      </div>
+      <div class="synth-card">
+        <div class="synth-title">Performance par catégorie</div>
+        <div class="synth-chart"><canvas id="sc-perf"></canvas></div>
+      </div>
+      <div class="synth-card">
+        <div class="synth-title">Classement des actifs</div>
+        <div class="podium-sep up">▲ Meilleures</div>
+        ${top.map(d => podiumRow(d, 'bu2')).join('')}
+        <div class="podium-sep dn" style="margin-top:6px">▼ Pires</div>
+        ${bot.map(d => podiumRow(d, 'bd2')).join('')}
+      </div>
+    </div>`;
+
+  // Mini donut — répartition par catégorie
+  dc('sc-alloc');
+  const allocVals = Object.fromEntries(Object.entries(byCat).map(([k,v])=>[k, v.val]));
+  charts['sc-alloc'] = new Chart(document.getElementById('sc-alloc').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(allocVals),
+      datasets: [{
+        data: Object.values(allocVals).map(v => Math.round(cv(v))),
+        backgroundColor: Object.keys(allocVals).map(k => CC[k]||'#888'),
+        borderWidth: 2, borderColor: 'transparent',
+      }],
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false, cutout:'60%',
+      plugins: {
+        legend: {position:'bottom', labels:{font:{size:10}, boxWidth:8}},
+        tooltip: {callbacks:{label: c => `${c.label}: ${f0(c.raw*(cur==='USD'?1:getFx()))}`}},
+      },
+    },
+  });
+
+  // Barres horizontales — investi vs valeur par catégorie
+  dc('sc-perf');
+  const cats = Object.keys(byCat);
+  charts['sc-perf'] = new Chart(document.getElementById('sc-perf').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: cats,
+      datasets: [
+        {label:'Investi', data:cats.map(k=>Math.round(cv(byCat[k].inv))), backgroundColor:'#B5D4F4', borderRadius:4},
+        {label:'Valeur',  data:cats.map(k=>Math.round(cv(byCat[k].val))), backgroundColor:cats.map(k=>CC[k]||'#888'), borderRadius:4},
+      ],
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true, position:'bottom', labels:{font:{size:10}, boxWidth:8}}},
+      scales:{
+        x:{grid:{display:false}},
+        y:{grid:{display:false}, ticks:{callback:v=>f0(v*(cur==='USD'?1:getFx())), font:{size:9}}},
+      },
+    },
+  });
+}
+
+// ── Détail position on click ────────────────────────────────────
+function togglePosDetail(id) {
+  // Ferme tous les autres
+  document.querySelectorAll('.pos-detail.open').forEach(el => {
+    if (el.id !== 'detail-' + id) {
+      el.classList.remove('open');
+      dc('pchart-' + el.id.replace('detail-', ''));
+    }
+  });
+  const detail = document.getElementById('detail-' + id);
+  if (!detail) return;
+  const isOpen = detail.classList.toggle('open');
+  const cid = 'pchart-' + id;
+  if (isOpen) {
+    const p = pos.find(x => x.id === id);
+    if (!p) return;
+    const c = calc(p);
+    dc(cid);
+    charts[cid] = new Chart(document.getElementById(cid).getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: ["Prix d'achat", "Prix actuel"],
+        datasets: [{
+          data: [Math.round(cv(p.pa)), Math.round(cv(p.px))],
+          backgroundColor: ['#B5D4F4', p.px >= p.pa ? '#1D9E75' : '#E24B4A'],
+          borderRadius: 6,
+        }],
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{display:false},
+          tooltip:{callbacks:{label:c=>`${c.label}: ${f0(c.raw*(cur==='USD'?1:getFx()))}`}},
+        },
+        scales:{
+          x:{grid:{display:false}, ticks:{font:{size:11}}},
+          y:{grid:{display:false}, ticks:{callback:v=>f0(v*(cur==='USD'?1:getFx())), font:{size:9}}},
+        },
+      },
+    });
+  } else {
+    dc(cid);
+  }
 }
 
 function mkD(id, lid, data, cols) {
@@ -729,7 +941,7 @@ function rWatch() {
 }
 
 function rAll() {
-  rKPI(); rPos();
+  rKPI(); rPos(); rSynth();
   if (document.getElementById('valloc').style.display !== 'none') rAlloc();
   if (document.getElementById('vprog').style.display  !== 'none') rProg();
   if (document.getElementById('vperf').style.display  !== 'none') rPerf();
